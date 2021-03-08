@@ -35,9 +35,6 @@ module Data.List.Toolbox (
     splitOn,
     chunksOf,
     genericChunksOf,
-    -- nubOrd,
-    -- nubOrdBy,
-    -- nubOrdOn,
 
     -- * Predicates
     anySame,
@@ -313,9 +310,6 @@ splitOn as lx =
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf _ [] = []
 chunksOf n xs = take n xs : chunksOf n (drop n xs)
-
--- nubOrd :: (Ord a) => [a] -> [a]
--- nubOrd = _
 
 -- | A version of @chunksOf@ where the parameter can be of any @Integral@ type.
 genericChunksOf :: (Integral n) => n -> [a] -> [[a]]
