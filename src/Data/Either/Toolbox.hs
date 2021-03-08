@@ -6,7 +6,7 @@
 --
 -- Utility functions on top of @Data.Either@.
 --
--- This module re-exports the above library, so modules need only import @Data.Either.Toolbox@.
+-- This module re-exports the above module, so modules need only import @Data.Either.Toolbox@.
 module Data.Either.Toolbox (
     -- * Re-exports
     module Data.Either,

@@ -8,7 +8,7 @@
 --
 -- Utility functions on top of @Control.Applicative@ and @Control.Monad@.
 --
--- This module re-exports the above libraries, so modules need only import @Control.Monad.Toolbox@.
+-- This module re-exports the above modules, so modules need only import @Control.Monad.Toolbox@.
 module Control.Monad.Toolbox (
     -- * Re-exports
     module Control.Monad,

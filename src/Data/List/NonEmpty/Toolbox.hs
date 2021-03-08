@@ -6,7 +6,7 @@
 --
 -- Utility functions on top of @Data.List.NonEmpty@.
 --
--- This module re-exports the above library, so modules need only import @Data.List.NonEmpty.Toolbox@.
+-- This module re-exports the above module, so modules need only import @Data.List.NonEmpty.Toolbox@.
 module Data.List.NonEmpty.Toolbox (
     -- * Re-exports
     module Data.List.NonEmpty,

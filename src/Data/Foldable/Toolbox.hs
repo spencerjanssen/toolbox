@@ -6,7 +6,7 @@
 --
 -- Utility functions on top of @Data.Foldable@.
 --
--- This module re-exports the above library, so modules need only import @Data.Foldable.Toolbox@.
+-- This module re-exports the above module, so modules need only import @Data.Foldable.Toolbox@.
 module Data.Foldable.Toolbox (
     -- * Re-exports
     module Data.Foldable,

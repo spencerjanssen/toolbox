@@ -6,7 +6,7 @@
 --
 -- Utility functions on top of @Data.List@.
 --
--- This module re-exports the above library, as well as @Data.Foldable.Toolbox@,
+-- This module re-exports the above module, as well as @Data.Foldable.Toolbox@,
 -- so modules need only import @Data.List.Toolbox@.
 module Data.List.Toolbox (
     -- * Re-exports

@@ -9,7 +9,7 @@
 --
 -- Utility functions on top of @Data.Function@.
 --
--- This module re-exports the above library, so modules need only import @Data.Function.Toolbox@.
+-- This module re-exports the above module, so modules need only import @Data.Function.Toolbox@.
 module Data.Function.Toolbox (
     -- * Re-exports
     module Data.Function,
