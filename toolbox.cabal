@@ -1,0 +1,41 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: bffc597f89b47c2da64b1df7b82f0ee4c545cd74a1a6edd02bf2a9590b8bde85
+
+name:           toolbox
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/bi-functor/toolbox#readme>
+homepage:       https://github.com/bi-functor/toolbox#readme
+bug-reports:    https://github.com/bi-functor/toolbox/issues
+author:         Melanie Brown
+maintainer:     brown.m@pm.me
+copyright:      (c)2021 Melanie Brown
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/bi-functor/toolbox
+
+library
+  exposed-modules:
+      Control.Monad.Toolbox
+      Data.Function.Toolbox
+      Data.Function.Toolbox.Internal
+  other-modules:
+      Paths_toolbox
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -haddock
+  build-depends:
+      base >=4.7 && <5
+    , template-haskell
+  default-language: Haskell2010
