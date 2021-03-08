@@ -22,6 +22,8 @@ module Data.Foldable.Toolbox (
     productOn,
     maximumOn,
     minimumOn,
+    maximumOf,
+    minimumOf,
 
     -- * Monadic utilities
     foldMapM,
@@ -36,6 +38,7 @@ module Data.Foldable.Toolbox (
 import Control.Monad.Toolbox (ifM, maybeM, (&^&), (|^|))
 import Data.Coerce (coerce)
 import Data.Foldable
+import Data.Function.Toolbox (using)
 import Data.Functor.Identity (Identity (..))
 import Data.Semigroup (Max (..), Min (..), Product (..), Sum (..))
 
@@ -120,16 +123,40 @@ sumOn f = coerce . foldMap' (coerce f `asTypeOf` (Sum . f))
 productOn :: (Foldable t, Num b) => (a -> b) -> t a -> b
 productOn f = coerce . foldMap' (coerce f `asTypeOf` (Product . f))
 
--- | Find the maximum value attained by the function on the structure.
+-- | Find the maximum point of the function on the structure.
 --
--- > maximumOn read ["4", "2", "3"] == Just 4
+-- > maximumOn read ["4", "2", "3"] == Just "4"
 -- > maximumOn read [] == Nothing
-maximumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> Maybe b
-maximumOn f = coerce . foldMap1' (coerce f `asTypeOf` (Max . f))
+maximumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> Maybe a
+maximumOn f = fmap (unFst . getMax) . foldMap1' (coerce (mkFst f) `asTypeOf` (Max . mkFst f))
 
--- | Find the minimum value attained by the function on the structure.
+-- | Find the minimum point of the function on the structure.
 --
--- > minimumOn read ["4", "2", "3"] == Just 2
+-- > minimumOn read ["4", "2", "3"] == Just "2"
 -- > minimumOn read [] == Nothing
-minimumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> Maybe b
-minimumOn f = coerce . foldMap1' (coerce f `asTypeOf` (Min . f))
+minimumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> Maybe a
+minimumOn f = fmap (unFst . getMin) . foldMap1' (coerce (mkFst f) `asTypeOf` (Min . mkFst f))
+
+-- | Find the maximum value of the function on the structure.
+--
+-- > maximumOf read ["4", "2", "3"] == Just 4
+-- > maximumOf read [] == Nothing
+maximumOf :: (Foldable t, Ord b) => (a -> b) -> t a -> Maybe b
+maximumOf f = coerce . foldMap1' (coerce f `asTypeOf` (Max . f))
+
+-- | Find the minimum value of the function on the structure.
+--
+-- > minimumOf read ["4", "2", "3"] == Just 2
+-- > minimumOf read [] == Nothing
+minimumOf :: (Foldable t, Ord b) => (a -> b) -> t a -> Maybe b
+minimumOf f = coerce . foldMap1' (coerce f `asTypeOf` (Min . f))
+
+newtype Fst a b = Fst {getFst :: (b, a)}
+instance Eq b => Eq (Fst a b) where (==) = (==) `using` (fst . getFst)
+instance Ord b => Ord (Fst a b) where compare = compare `using` (fst . getFst)
+
+mkFst :: (a -> b) -> a -> Fst a b
+mkFst f x = Fst (f x, x)
+
+unFst :: Fst a b -> a
+unFst = snd . getFst
