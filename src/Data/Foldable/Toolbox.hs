@@ -14,6 +14,7 @@ module Data.Foldable.Toolbox (
     -- * General utilities
     notNull,
     genericLength,
+    fold1,
     foldMap1,
     foldMap1',
     firstJust,
@@ -45,6 +46,10 @@ notNull = foldr (\_ _ -> True) False
 -- | A version of @length@ where the result can be of any @Integral@ type.
 genericLength :: (Foldable t, Integral n) => t a -> n
 genericLength = fromIntegral . length
+
+-- | A version of @fold@ that works on a @Semigroup@ instead of a @Monoid@.
+fold1 :: (Foldable t, Semigroup m) => t m -> Maybe m
+fold1 = foldMap Just
 
 -- | A version of @foldMap@ that works on a @Semigroup@ instead of a @Monoid@.
 foldMap1 :: (Foldable t, Semigroup m) => (a -> m) -> t a -> Maybe m
