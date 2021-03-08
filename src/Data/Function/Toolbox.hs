@@ -56,6 +56,7 @@ module Data.Function.Toolbox (
     applyN,
     applyWhen,
     (.:),
+    using,
 ) where
 
 import Data.Function
@@ -80,6 +81,10 @@ applyWhen b f = if b then f else id
 -- > \x y -> (succ .: (+)) x y == (x + y) + 1
 (.:) :: (c -> d) -> (a -> b -> c) -> a -> b -> d
 g .: f = (g .) . f
+
+-- | Like @on@, but memoizes values to minimize necessary calculations.
+using :: (b -> b -> c) -> (a -> b) -> (a -> a -> c)
+cmp `using` f = \x -> let fx = f x in cmp fx . f
 
 $(mkCurryN 20)
 $(mkUncurryN 20)
