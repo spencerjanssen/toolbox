@@ -1,5 +1,3 @@
-{-# LANGUAGE TypeApplications #-}
-
 -- |
 -- Module       : Data.Foldable.Toolbox
 -- Copyright    : (c) Melanie Brown 2021
@@ -15,6 +13,7 @@ module Data.Foldable.Toolbox (
 
     -- * General utilities
     notNull,
+    genericLength,
     foldMap1,
     foldMap1',
     firstJust,
@@ -42,6 +41,10 @@ import Data.Semigroup (Max (..), Min (..), Product (..), Sum (..))
 -- | The negation of @null@.
 notNull :: (Foldable t) => t a -> Bool
 notNull = foldr (\_ _ -> True) False
+
+-- | A version of @length@ where the result can be of any @Integral@ type.
+genericLength :: (Foldable t, Integral n) => t a -> n
+genericLength = fromIntegral . length
 
 -- | A version of @foldMap@ that works on a @Semigroup@ instead of a @Monoid@.
 foldMap1 :: (Foldable t, Semigroup m) => (a -> m) -> t a -> Maybe m
