@@ -18,6 +18,7 @@ module Data.List.Toolbox (
     headMaybe,
     lastMaybe,
     safeTail,
+    safeInit,
     (!?),
     enumerate,
     takeEnd,
@@ -34,6 +35,9 @@ module Data.List.Toolbox (
     splitOn,
     chunksOf,
     genericChunksOf,
+    -- nubOrd,
+    -- nubOrdBy,
+    -- nubOrdOn,
 
     -- * Predicates
     anySame,
@@ -87,6 +91,13 @@ lastMaybe = foldl (const Just) Nothing
 -- > safeTail [] == []
 safeTail :: [a] -> [a]
 safeTail = list [] (\_ xs -> xs)
+
+-- | A version of @init@ that does not fail on empty lists.
+--
+-- > safeInit [2, 3, 4] == [2, 3]
+-- > safeInit [] == []
+safeInit :: [a] -> [a]
+safeInit = dropEnd 1
 
 -- | Get the value of a list at an index, if the list is long enough. Safe version of @(!!)@.
 --
@@ -177,7 +188,7 @@ takeEnd n xs = if n <= 0 then [] else go xs (drop n xs)
 -- > dropEnd 2 [1, 2, 3] == [1]
 -- > \xs i -> i >= 0 ==> dropEnd i xs == take (length xs - i) xs
 dropEnd :: Int -> [a] -> [a]
-dropEnd n xs = if n <= 0 then xs else zipWith const xs (take n xs)
+dropEnd n xs = if n <= 0 then xs else zipWith const xs (drop n xs)
 
 -- | A version of @takeWhile@ that keeps values from the end of the list.
 --
@@ -302,6 +313,9 @@ splitOn as lx =
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf _ [] = []
 chunksOf n xs = take n xs : chunksOf n (drop n xs)
+
+-- nubOrd :: (Ord a) => [a] -> [a]
+-- nubOrd = _
 
 -- | A version of @chunksOf@ where the parameter can be of any @Integral@ type.
 genericChunksOf :: (Integral n) => n -> [a] -> [[a]]
