@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: de2a716ab6b46a4ac0e685cae3c684968bbbb32d09f77d7796e20c35e7b6e455
+-- hash: 70955f42740a23b1dd220a8a2ffb0fbcf63e4dee491bdcf939f356a342ae80db
 
 name:           toolbox
 version:        0.1.0.0
@@ -32,6 +32,7 @@ library
       Data.Foldable.Toolbox
       Data.Function.Toolbox
       Data.Function.Toolbox.Internal
+      Data.List.NonEmpty.Toolbox
       Data.List.Toolbox
   other-modules:
       Paths_toolbox
