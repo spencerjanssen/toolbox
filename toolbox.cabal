@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bffc597f89b47c2da64b1df7b82f0ee4c545cd74a1a6edd02bf2a9590b8bde85
+-- hash: e0c6b6b23bce1956cf5c37fcf8e99bdd2f1285ca0728303be80f5bfa139efff9
 
 name:           toolbox
 version:        0.1.0.0
@@ -13,7 +13,7 @@ homepage:       https://github.com/bi-functor/toolbox#readme
 bug-reports:    https://github.com/bi-functor/toolbox/issues
 author:         Melanie Brown
 maintainer:     brown.m@pm.me
-copyright:      (c)2021 Melanie Brown
+copyright:      (c) 2021 Melanie Brown
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -28,6 +28,7 @@ source-repository head
 library
   exposed-modules:
       Control.Monad.Toolbox
+      Data.Either.Toolbox
       Data.Function.Toolbox
       Data.Function.Toolbox.Internal
   other-modules:
