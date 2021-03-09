@@ -68,6 +68,8 @@ import Data.Maybe (fromMaybe)
 ifA :: (Applicative f) => f Bool -> f a -> f a -> f a
 ifA test t f = bool <$> f <*> t <*> test
 
+infixr 3 <&&>
+
 -- | A version of @(&&)@ over an @Applicative functor. Does not short-circuit!
 --
 --   If you need short-circuiting and have a @Monad@ constraint, use @(&^&)@.
@@ -76,6 +78,8 @@ ifA test t f = bool <$> f <*> t <*> test
 -- > Just False <&&> Just undefined == undefined
 (<&&>) :: (Applicative f) => f Bool -> f Bool -> f Bool
 (<&&>) = liftA2 (&&)
+
+infixr 2 <||>
 
 -- | A version of @(||)@ over an @Applicative functor. Does not short-circuit!
 --
@@ -94,12 +98,16 @@ ifA test t f = bool <$> f <*> t <*> test
 ifM :: (Monad m) => m Bool -> m a -> m a -> m a
 ifM test t f = bool f t =<< test
 
+infixr 3 &^&
+
 -- | A version of (&&) over a @Monad@. Short-circuits if the first argument is @False@.
 --
 -- > Just True &^& Just False == Just False
 -- > Just False &^& Just undefined == Just False
 (&^&) :: (Monad m) => m Bool -> m Bool -> m Bool
 ma &^& mb = ifM ma mb (pure False)
+
+infixr 2 |^|
 
 -- | A version of (&&) over a @Monad@. Short-circuits if the first argument is @True@.
 --
