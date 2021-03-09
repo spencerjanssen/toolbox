@@ -145,7 +145,7 @@ disjoint = (null .) . intersect
 
 -- | Like @disjoint@, but with better algorithmic complexity.
 disjointOrd :: (Ord a) => [a] -> [a] -> Bool
-disjointOrd = (null .) . (Set.intersection `using` Set.fromList)
+disjointOrd = Set.disjoint `using` Set.fromList
 
 -- | An ordered list of values of a @Bounded@ @Enum@ type.
 enumerate :: (Enum a, Bounded a) => [a]
