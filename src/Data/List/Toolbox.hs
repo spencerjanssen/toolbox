@@ -15,8 +15,8 @@ module Data.List.Toolbox (
 
     -- * Basic combinators
     list,
-    headMaybe,
-    lastMaybe,
+    safeHead,
+    safeLast,
     safeTail,
     safeInit,
     tuple2,
@@ -77,15 +77,15 @@ list n c lx = case lx of
     (x : xs) -> c x xs
 
 -- | A convenient synonym for 'listToMaybe'.
-headMaybe :: [a] -> Maybe a
-headMaybe = listToMaybe
+safeHead :: [a] -> Maybe a
+safeHead = listToMaybe
 
 -- | Get the last element of a (possibly empty) list.
 --
--- > lastMaybe [] == Nothing
--- > lastMaybe [2, 3, 4] == Just 4
-lastMaybe :: [a] -> Maybe a
-lastMaybe = foldl (const Just) Nothing
+-- > safeHast [] == Nothing
+-- > safeHast [2, 3, 4] == Just 4
+safeLast :: [a] -> Maybe a
+safeLast = foldl (const Just) Nothing
 
 -- | A version of 'tail' that does not fail on empty lists.
 --
@@ -123,7 +123,7 @@ tuple4 _ = Nothing
 -- > \xs n -> n < 0 ==> xs !? n == Nothing
 (!?) :: [a] -> Int -> Maybe a
 [] !? _ = Nothing
-xs !? 0 = headMaybe xs
+xs !? 0 = safeHead xs
 (_ : xs) !? n = if n < 0 then Nothing else xs !? pred n
 
 -- | Check if the list contains duplicates. /O(n^2)/.
