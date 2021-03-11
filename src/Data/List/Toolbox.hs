@@ -74,30 +74,31 @@ list n c lx = case lx of
     [] -> n
     (x : xs) -> c x xs
 
--- | A convenient synonym for 'listToMaybe'.
+-- | Get the first element of a (possibly empty) list safely.
+--   A convenient synonym for 'listToMaybe'.
 safeHead :: [a] -> Maybe a
 safeHead = listToMaybe
 
--- | Get the last element of a (possibly empty) list.
+-- | Get the last element of a (possibly empty) list safely.
 --
 -- > safeLast [] == Nothing
 -- > safeLast [2, 3, 4] == Just 4
 safeLast :: [a] -> Maybe a
 safeLast = foldl (const Just) Nothing
 
--- | A version of 'tail' that does not fail on empty lists.
+-- | Get the tail of a (possibly empty) list safely.
 --
--- > safeTail [2, 3, 4] == [3, 4]
--- > safeTail [] == []
-safeTail :: [a] -> [a]
-safeTail = list [] (\_ xs -> xs)
+-- > safeTail [2, 3, 4] == Just [3, 4]
+-- > safeTail [] == Nothing
+safeTail :: [a] -> Maybe [a]
+safeTail = list Nothing (const Just)
 
--- | A version of 'init' that does not fail on empty lists.
+-- | Get the 'init' of a (possibly empty) list safely.
 --
--- > safeInit [2, 3, 4] == [2, 3]
--- > safeInit [] == []
-safeInit :: [a] -> [a]
-safeInit = dropEnd 1
+-- > safeInit [2, 3, 4] == Just [2, 3]
+-- > safeInit [] == Nothing
+safeInit :: [a] -> Maybe [a]
+safeInit = list Nothing (const $ Just . init)
 
 -- | Create a pair from the first two elements of a list, if they exist.
 tuple2 :: [a] -> Maybe (a, a)
