@@ -7,6 +7,8 @@
 -- Copyright    : (c) Melanie Brown 2021
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
+--
+-- Intervals of time, that may by unbounded in either direction.
 module Data.Time.Timeframe (
     -- * Frame extremities
 
@@ -25,12 +27,12 @@ module Data.Time.Timeframe (
     minStartEnd,
     maxStartEnd,
 
-    -- * Timeframes
+    -- * The 'Timeframe' type
     Timeframe (..),
     timeframe,
     tfDuration,
     isDuring,
-    finite,
+    isFinite,
     union,
     intersect,
     difference,
@@ -113,9 +115,9 @@ isDuring :: LocalTime -> Timeframe -> Bool
 isDuring lt Timeframe{..} = tfStart <= FixedStart lt && FixedEnd lt <= tfEnd
 
 -- | Is the 'Timeframe' interval bounded in both directions?
-finite :: Timeframe -> Bool
-finite (Timeframe (FixedStart _) (FixedEnd _)) = True
-finite _ = False
+isFinite :: Timeframe -> Bool
+isFinite (Timeframe (FixedStart _) (FixedEnd _)) = True
+isFinite _ = False
 
 -- | The set union of two timeframes viewed as intervals.
 --   Non-overlapping timeframes will result in a 'Left' value; otherwise they will
