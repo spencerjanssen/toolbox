@@ -123,14 +123,14 @@ sumOn f = coerce . foldMap' (coerce f `asTypeOf` (Sum . f))
 productOn :: (Foldable t, Num b) => (a -> b) -> t a -> b
 productOn f = coerce . foldMap' (coerce f `asTypeOf` (Product . f))
 
--- | Find the maximum point of the function on the structure.
+-- | Find the argument maximum of the function on the structure.
 --
 -- > maximumOn read ["4", "2", "3"] == Just "4"
 -- > maximumOn read [] == Nothing
 maximumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> Maybe a
 maximumOn f = fmap (unFst . getMax) . foldMap1' (coerce (mkFst f) `asTypeOf` (Max . mkFst f))
 
--- | Find the minimum point of the function on the structure.
+-- | Find the argument minimum of the function on the structure.
 --
 -- > minimumOn read ["4", "2", "3"] == Just "2"
 -- > minimumOn read [] == Nothing
