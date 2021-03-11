@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 382065823bd0e95583f91de59383bf648b725ba9869bbdbbbe8970b56a155247
+-- hash: abce33e654c68feea0a24379f032faf26dc2ba16e79fcc67ac4296254bd29efe
 
 name:           toolbox
 version:        0.1.0.0
@@ -39,6 +39,7 @@ library
       Data.Map.Monoidal.Lazy
       Data.Map.Monoidal.Strict
       Data.Monoid.Toolbox
+      Data.Ord.Toolbox
       Data.Tuple.Toolbox
   other-modules:
       Paths_toolbox
