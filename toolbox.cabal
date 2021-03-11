@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: abce33e654c68feea0a24379f032faf26dc2ba16e79fcc67ac4296254bd29efe
+-- hash: e403eb4b31007c2356e736c7d5a7da5231395c084237ea0aa8215bc5655777b2
 
 name:           toolbox
 version:        0.1.0.0
@@ -40,6 +40,10 @@ library
       Data.Map.Monoidal.Strict
       Data.Monoid.Toolbox
       Data.Ord.Toolbox
+      Data.Time.Calendar.Toolbox
+      Data.Time.LocalTime.Toolbox
+      Data.Time.Timeframe
+      Data.Time.Toolbox
       Data.Tuple.Toolbox
   other-modules:
       Paths_toolbox
@@ -50,4 +54,5 @@ library
       base >=4.7 && <5
     , containers
     , template-haskell
+    , time
   default-language: Haskell2010
