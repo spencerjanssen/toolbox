@@ -4,15 +4,10 @@
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
 --
--- Utility functions on top of @Data.List@.
+-- Utility functions on top of 'Data.List'.
 --
--- This module re-exports the above module, as well as @Data.Foldable.Toolbox@,
--- so modules need only import @Data.List.Toolbox@.
+-- This module re-exports the above module, so modules need only import 'Data.List.Toolbox'.
 module Data.List.Toolbox (
-    -- * Re-exports
-    module Data.Foldable.Toolbox,
-    module Data.List,
-
     -- * Basic combinators
     list,
     safeHead,
@@ -57,12 +52,15 @@ module Data.List.Toolbox (
     groupSortOn,
     intersectOn,
     unionOn,
+
+    -- * Re-exports
+    module Data.List,
 ) where
 
 import Data.Bifunctor (first, second)
-import Data.Foldable.Toolbox
+import qualified Data.Foldable
 import Data.Function.Toolbox (using)
-import Data.List hiding (genericLength)
+import Data.List
 import Data.List.NonEmpty (NonEmpty (..), fromList)
 import Data.Maybe (fromJust, listToMaybe)
 import Data.Set (Set)
@@ -82,8 +80,8 @@ safeHead = listToMaybe
 
 -- | Get the last element of a (possibly empty) list.
 --
--- > safeHast [] == Nothing
--- > safeHast [2, 3, 4] == Just 4
+-- > safeLast [] == Nothing
+-- > safeLast [2, 3, 4] == Just 4
 safeLast :: [a] -> Maybe a
 safeLast = foldl (const Just) Nothing
 
@@ -239,7 +237,7 @@ breakEnd p xs = (dropWhileEnd p xs, takeWhileEnd p xs)
 chopInfix :: (Eq a) => NonEmpty a -> [a] -> ([a], [a])
 chopInfix _ [] = ([], [])
 chopInfix as lx@(x : xs) =
-    if toList as `isPrefixOf` lx
+    if Data.Foldable.toList as `isPrefixOf` lx
         then ([], lx)
         else first (x :) $ chopInfix as xs
 
@@ -257,7 +255,7 @@ removed as xs = second (drop (length as)) $ chopInfix (fromList as) xs
 -- > replaceFirst (fromList "z") "" "azbzc" == "abzc"
 -- > replaceFirst (fromList "z") "xy" "azbzc" == "axybzc"
 replaceFirst :: (Eq a) => NonEmpty a -> [a] -> [a] -> [a]
-replaceFirst as bs = (\(pre, post) -> pre ++ bs ++ post) . removed (toList as)
+replaceFirst as bs = (\(pre, post) -> pre ++ bs ++ post) . removed (Data.Foldable.toList as)
 
 -- | A version of 'groupBy' that accepts a user-defined function on which to test equality.
 --
@@ -307,7 +305,7 @@ replace la bs lx@(x : xs) =
         then bs ++ replace la bs (fromJust (stripPrefix as lx))
         else x : replace la bs xs
   where
-    as = toList la
+    as = Data.Foldable.toList la
 
 -- | A version of 'replace' where instead of conjoining the prefix and suffix,
 --   they are kept as separate sublists.

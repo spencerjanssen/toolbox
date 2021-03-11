@@ -4,18 +4,18 @@
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
 --
--- Utility functions on top of @Data.Monoid@.
+-- Utility functions on top of 'Data.Monoid'.
 --
--- This module re-exports @Data.Semigroup@ (which exports better defaults than @Data.Monoid@), so modules need only import @Data.Monoid.Toolbox@.
+-- This module re-exports 'Data.Semigroup' (which exports better defaults than 'Data.Monoid'), so modules need only import 'Data.Monoid.Toolbox'.
 module Data.Monoid.Toolbox (
-    -- * Re-exports
-    module Data.Semigroup,
-
     -- * General utilities
     discard,
     nomempty,
     (<?),
     (?>),
+
+    -- * Re-exports
+    module Data.Semigroup,
 ) where
 
 import Data.Semigroup
@@ -27,7 +27,7 @@ import Data.Semigroup
 discard :: (Monoid a) => Bool -> a -> a
 discard b a = if b then mempty else a
 
--- | Returns @Just@ the value, provided it is not @mempty@.
+-- | Returns 'Just' the value, provided it is not 'mempty'.
 --
 -- > nomempty [] == Nothing
 -- > nomempty [4] == Just [4]

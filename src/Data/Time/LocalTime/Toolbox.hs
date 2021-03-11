@@ -4,18 +4,18 @@
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
 --
--- Utility functions on top of @Data.Time.LocalTime@.
+-- Utility functions on top of 'Data.Time.LocalTime'.
 --
--- This module re-exports the above module, so modules need only import @Data.Time.LocalTime.Toolbox@.
+-- This module re-exports the above module, so modules need only import 'Data.Time.LocalTime.Toolbox'.
 module Data.Time.LocalTime.Toolbox (
-    -- * Re-exports
-    module Data.Time.LocalTime,
-
     -- * Convenience functions
     getCurrentLocalTime,
     addSeconds,
     lastMinute,
     lastSecond,
+
+    -- * Re-exports
+    module Data.Time.LocalTime,
 ) where
 
 import Data.Time.Calendar

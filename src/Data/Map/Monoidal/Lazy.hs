@@ -13,16 +13,16 @@
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
 --
--- A version of @Data.Map.Lazy@ where the default combining operations
+-- A version of 'Data.Map.Lazy' where the default combining operations
 -- require the values to form a 'Semigroup', so that they may be merged
--- instead of overwritten as is the default in @Data.Map@.
+-- instead of overwritten as is the default in 'Data.Map'.
 --
--- This module is intended to duplicate the functionality from @Data.Map.Lazy@
+-- This module is intended to duplicate the functionality from 'Data.Map.Lazy'
 -- as closely as possible. Most functions are simply newtype synonyms for the
 -- ones found in the original module, and are provided here for similarity and convenience.
 module Data.Map.Monoidal.Lazy (
     -- * Map type
-    Map,
+    Map (..),
 
     -- * Construction
     empty,
@@ -386,13 +386,13 @@ adjust f k (Map m) = Map $ Map.adjust f k m
 adjustWithKey :: (Ord k) => (k -> a -> a) -> k -> Map k a -> Map k a
 adjustWithKey f k (Map m) = Map $ Map.adjustWithKey f k m
 
--- | /O(log n)/. Change a value at a specific key. If the function evaluates to @Nothing@,
+-- | /O(log n)/. Change a value at a specific key. If the function evaluates to 'Nothing',
 --   the key and value are removed from the map. If the key is missing, do nothing.
 update :: (Ord k) => (a -> Maybe a) -> k -> Map k a -> Map k a
 update f k (Map m) = Map $ Map.update f k m
 
 -- | /O(log n)/. Change a value at a specific key with access to the key itself.
---   If the function evaluates to @Nothing@, the key and value are removed from the map.
+--   If the function evaluates to 'Nothing', the key and value are removed from the map.
 --   If the key is missing, do nothing.
 updateWithKey :: (Ord k) => (k -> a -> Maybe a) -> k -> Map k a -> Map k a
 updateWithKey f k (Map m) = Map $ Map.updateWithKey f k m
@@ -501,11 +501,11 @@ difference (Map m) (Map n) = Map $ Map.difference m n
 (\\) :: (Ord k) => Map k a -> Map k b -> Map k a
 (\\) = difference
 
--- | /O(n + m)/. Difference with a combining function. Deletes keys if the value is @Nothing@.
+-- | /O(n + m)/. Difference with a combining function. Deletes keys if the value is 'Nothing'.
 differenceWith :: (Ord k) => (a -> b -> Maybe a) -> Map k a -> Map k b -> Map k a
 differenceWith f (Map m) (Map n) = Map $ Map.differenceWith f m n
 
--- | /O(n + m)/. Difference with a combining function. Deletes keys if the value is @Nothing@.
+-- | /O(n + m)/. Difference with a combining function. Deletes keys if the value is 'Nothing'.
 differenceWithKey :: (Ord k) => (k -> a -> b -> Maybe a) -> Map k a -> Map k b -> Map k a
 differenceWithKey f (Map m) (Map n) = Map $ Map.differenceWithKey f m n
 

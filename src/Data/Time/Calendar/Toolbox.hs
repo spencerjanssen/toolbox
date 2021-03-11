@@ -8,13 +8,10 @@
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
 --
--- Utility functions on top of @Data.Time.Calendar@.
+-- Utility functions on top of 'Data.Time.Calendar'.
 --
--- This module re-exports the above module, so modules need only import @Data.Time.Calendar.Toolbox@.
+-- This module re-exports the above module, so modules need only import 'Data.Time.Calendar.Toolbox'.
 module Data.Time.Calendar.Toolbox (
-    -- * Re-exports
-    module Data.Time.Calendar,
-
     -- * The 'Month' datatype
     Month (..),
     mkGregorian,
@@ -30,6 +27,9 @@ module Data.Time.Calendar.Toolbox (
     lastOfYear,
     monthAgo,
     monthFromNow,
+
+    -- * Re-exports
+    module Data.Time.Calendar,
 ) where
 
 import Data.Ix (Ix)

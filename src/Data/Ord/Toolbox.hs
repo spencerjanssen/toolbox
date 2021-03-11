@@ -4,18 +4,18 @@
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
 --
--- Utility functions on top of @Data.Ord@.
+-- Utility functions on top of 'Data.Ord'.
 --
--- This module re-exports the above module, so modules need only import @Data.Ord.Toolbox@.
+-- This module re-exports the above module, so modules need only import 'Data.Ord.Toolbox'.
 module Data.Ord.Toolbox (
-    -- * Re-exports
-    module Data.Ord,
-
     -- * Convenience functions
     minBy,
     maxBy,
     minOn,
     maxOn,
+
+    -- * Re-exports
+    module Data.Ord,
 ) where
 
 import Data.Ord

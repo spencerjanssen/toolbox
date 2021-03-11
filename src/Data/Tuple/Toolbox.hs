@@ -4,13 +4,10 @@
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
 --
--- Utility functions on top of @Data.Tuple@.
+-- Utility functions on top of 'Data.Tuple'.
 --
--- This module re-exports the above library, so modules need only import @Data.Tuple.Toolbox@.
+-- This module re-exports the above library, so modules need only import 'Data.Tuple.Toolbox'.
 module Data.Tuple.Toolbox (
-    -- * Re-exports
-    module Data.Tuple,
-
     -- * Pairs
     (&&&),
     (***),
@@ -34,6 +31,9 @@ module Data.Tuple.Toolbox (
     second4,
     third4,
     fourth4,
+
+    -- * Re-exports
+    module Data.Tuple,
 ) where
 
 import Control.Applicative (liftA2)

@@ -7,12 +7,28 @@
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
 --
--- Utility functions on top of @Data.Function@.
+-- Utility functions on top of 'Data.Function'.
 --
--- This module re-exports the above module, so modules need only import @Data.Function.Toolbox@.
+-- This module re-exports the above module, so modules need only import 'Data.Function.Toolbox'.
 module Data.Function.Toolbox (
     -- * Re-exports
     module Data.Function,
+
+    -- * Extra utilities
+    applyN,
+    applyWhen,
+    (.:),
+    using,
+
+    -- * More 'const' functions
+    const2,
+    const3_1,
+    const3_2,
+    const3_3,
+    const4_1,
+    const4_2,
+    const4_3,
+    const4_4,
 
     -- * More curries and uncurries
     curry3,
@@ -51,29 +67,13 @@ module Data.Function.Toolbox (
     uncurry18,
     uncurry19,
     uncurry20,
-
-    -- * More @const@ functions
-    const2,
-    const3_1,
-    const3_2,
-    const3_3,
-    const4_1,
-    const4_2,
-    const4_3,
-    const4_4,
-
-    -- * Extra utilities
-    applyN,
-    applyWhen,
-    (.:),
-    using,
 ) where
 
 import Data.Function
 import Data.Function.Toolbox.Internal (mkCurryN, mkUncurryN)
 import Data.Semigroup (Endo (..), stimesMonoid)
 
--- | Apply a function @n@ times.
+-- | Apply a function 'n' times.
 --
 -- > \x -> applyN 5 succ x == x + 5
 applyN :: (Integral n) => n -> (a -> a) -> (a -> a)
@@ -92,11 +92,11 @@ applyWhen b f = if b then f else id
 (.:) :: (c -> d) -> (a -> b -> c) -> a -> b -> d
 g .: f = (g .) . f
 
--- | Like @on@, but memoizes values to minimize necessary calculations.
+-- | Like 'on', but memoizes values to minimize necessary calculations.
 using :: (b -> b -> c) -> (a -> b) -> (a -> a -> c)
 cmp `using` f = \x -> let fx = f x in cmp fx . f
 
--- | A named @(\_ x -> x)@.
+-- | A named @(\\_ x -> x)@.
 const2 :: p1 -> p2 -> p2
 const2 _ x = x
 

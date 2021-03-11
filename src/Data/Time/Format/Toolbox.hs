@@ -4,13 +4,10 @@
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
 --
--- Utility functions on top of @Data.Time.Format@.
+-- Utility functions on top of 'Data.Time.Format'.
 --
--- This module re-exports the above module, so modules need only import @Data.Time.Format.Toolbox@.
+-- This module re-exports the above module, so modules need only import 'Data.Time.Format.Toolbox'.
 module Data.Time.Format.Toolbox (
-    -- * Re-exports
-    module Data.Time.Format,
-
     -- * Formatting
     mdy,
     ymd,
@@ -64,6 +61,9 @@ module Data.Time.Format.Toolbox (
     parseMdy12H,
     parseMdy12h,
     parseMdy12Hs,
+
+    -- * Re-exports
+    module Data.Time.Format,
 ) where
 
 import Data.Function.Toolbox ((.:))

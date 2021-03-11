@@ -4,9 +4,9 @@
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
 --
--- Utility functions on top of @Data.Time@.
+-- Utility functions on top of 'Data.Time'.
 --
--- This module re-exports the above module, as well as all of the @Data.Time.X.Toolbox@ modules, so modules need only import @Data.Time.Toolbox@.
+-- This module re-exports the above module, as well as all of the 'Data.Time.X.Toolbox' modules, so modules need only import 'Data.Time.Toolbox'.
 module Data.Time.Toolbox (
     -- * Re-exports
     module Data.Time,

@@ -13,11 +13,11 @@
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
 --
--- A version of @Data.IntMap.Lazy@ where the default combining operations
+-- A version of 'Data.IntMap.Lazy' where the default combining operations
 -- require the values to form a 'Semigroup', so that they may be merged
--- instead of overwritten as is the default in @Data.IntMap@.
+-- instead of overwritten as is the default in 'Data.IntMap'.
 --
--- This module is intended to duplicate the functionality from @Data.IntMap.Lazy@
+-- This module is intended to duplicate the functionality from 'Data.IntMap.Lazy'
 -- as closely as possible. Most functions are simply newtype synonyms for the
 -- ones found in the original module, and are provided here for similarity and convenience.
 module Data.IntMap.Monoidal.Lazy (
@@ -342,13 +342,13 @@ adjust f k (IntMap m) = IntMap $ Map.adjust f k m
 adjustWithKey :: (Int -> a -> a) -> Int -> IntMap a -> IntMap a
 adjustWithKey f k (IntMap m) = IntMap $ Map.adjustWithKey f k m
 
--- | /O(log n)/. Change a value at a specific key. If the function evaluates to @Nothing@,
+-- | /O(log n)/. Change a value at a specific key. If the function evaluates to 'Nothing',
 --   the key and value are removed from the map. If the key is missing, do nothing.
 update :: (a -> Maybe a) -> Int -> IntMap a -> IntMap a
 update f k (IntMap m) = IntMap $ Map.update f k m
 
 -- | /O(log n)/. Change a value at a specific key with access to the key itself.
---   If the function evaluates to @Nothing@, the key and value are removed from the map.
+--   If the function evaluates to 'Nothing', the key and value are removed from the map.
 --   If the key is missing, do nothing.
 updateWithKey :: (Int -> a -> Maybe a) -> Int -> IntMap a -> IntMap a
 updateWithKey f k (IntMap m) = IntMap $ Map.updateWithKey f k m
@@ -457,11 +457,11 @@ difference (IntMap m) (IntMap n) = IntMap $ Map.difference m n
 (\\) :: IntMap a -> IntMap b -> IntMap a
 (\\) = difference
 
--- | /O(n + m)/. Difference with a combining function. Deletes keys if the value is @Nothing@.
+-- | /O(n + m)/. Difference with a combining function. Deletes keys if the value is 'Nothing'.
 differenceWith :: (a -> b -> Maybe a) -> IntMap a -> IntMap b -> IntMap a
 differenceWith f (IntMap m) (IntMap n) = IntMap $ Map.differenceWith f m n
 
--- | /O(n + m)/. Difference with a combining function. Deletes keys if the value is @Nothing@.
+-- | /O(n + m)/. Difference with a combining function. Deletes keys if the value is 'Nothing'.
 differenceWithKey :: (Int -> a -> b -> Maybe a) -> IntMap a -> IntMap b -> IntMap a
 differenceWithKey f (IntMap m) (IntMap n) = IntMap $ Map.differenceWithKey f m n
 

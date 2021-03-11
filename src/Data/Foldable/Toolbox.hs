@@ -4,13 +4,10 @@
 -- License      : BSD3 (see the file LICENSE)
 -- Maintainer   : brown.m@pm.me
 --
--- Utility functions on top of @Data.Foldable@.
+-- Utility functions on top of 'Data.Foldable'.
 --
--- This module re-exports the above module, so modules need only import @Data.Foldable.Toolbox@.
+-- This module re-exports the above module, so modules need only import 'Data.Foldable.Toolbox'.
 module Data.Foldable.Toolbox (
-    -- * Re-exports
-    module Data.Foldable,
-
     -- * General utilities
     notNull,
     genericLength,
@@ -33,6 +30,9 @@ module Data.Foldable.Toolbox (
     andM,
     findM,
     firstJustM,
+
+    -- * Re-exports
+    module Data.Foldable,
 ) where
 
 import Control.Monad.Toolbox (ifM, maybeM, (&^&), (|^|))
@@ -42,23 +42,23 @@ import Data.Function.Toolbox (using)
 import Data.Functor.Identity (Identity (..))
 import Data.Semigroup (Max (..), Min (..), Product (..), Sum (..))
 
--- | The negation of @null@.
+-- | The negation of 'null'.
 notNull :: (Foldable t) => t a -> Bool
 notNull = foldr (\_ _ -> True) False
 
--- | A version of @length@ where the result can be of any @Integral@ type.
+-- | A version of 'length' where the result can be of any 'Integral' type.
 genericLength :: (Foldable t, Integral n) => t a -> n
 genericLength = fromIntegral . length
 
--- | A version of @fold@ that works on a @Semigroup@ instead of a @Monoid@.
+-- | A version of 'fold' that works on a 'Semigroup' instead of a 'Monoid'.
 fold1 :: (Foldable t, Semigroup m) => t m -> Maybe m
 fold1 = foldMap Just
 
--- | A version of @foldMap@ that works on a @Semigroup@ instead of a @Monoid@.
+-- | A version of 'foldMap' that works on a 'Semigroup' instead of a 'Monoid'.
 foldMap1 :: (Foldable t, Semigroup m) => (a -> m) -> t a -> Maybe m
 foldMap1 f = foldMap (Just . f)
 
--- | A version of @foldMap'@ that works on a @Semigroup@ instead of a @Monoid@.
+-- | A version of @foldMap'@ that works on a 'Semigroup' instead of a 'Monoid'.
 foldMap1' :: (Foldable t, Semigroup m) => (a -> m) -> t a -> Maybe m
 foldMap1' f = foldMap' (Just . f)
 
@@ -69,41 +69,41 @@ foldMapM :: (Foldable t, Monad m, Monoid b) => (a -> m b) -> t a -> m b
 foldMapM f = foldlM (\mb a -> (<> mb) <$> f a) mempty
 {-# INLINE foldMapM #-}
 
--- | A version of @any@, where the predicate can be monadic. Short-circuits.
+-- | A version of 'any', where the predicate can be monadic. Short-circuits.
 --
 -- > anyM (\a -> Just (a > 3)) [1, 4, undefined] == Just True
 anyM :: (Foldable t, Monad m) => (a -> m Bool) -> t a -> m Bool
 anyM f = foldr ((|^|) . f) (pure False)
 
--- | A version of @all@, where the predicate can be monadic. Short-circuits.
+-- | A version of 'all', where the predicate can be monadic. Short-circuits.
 --
 -- > allM (\a -> Just (a < 3)) [1, 4, undefined] == Just False
 allM :: (Foldable t, Monad m) => (a -> m Bool) -> t a -> m Bool
 allM f = foldr ((&^&) . f) (pure True)
 
--- | A version of @or@, where the values can be monadic. Short-circuits.
+-- | A version of 'or', where the values can be monadic. Short-circuits.
 --
 -- > orM [Just True, Just False, undefined] == Just True
 orM :: (Foldable t, Monad m) => t (m Bool) -> m Bool
 orM = anyM id
 
--- | A version of @and@, where the values can be monadic. Short-circuits.
+-- | A version of 'and', where the values can be monadic. Short-circuits.
 --
 -- > andM [Just True, Just False, undefined] == Just False
 andM :: (Foldable t, Monad m) => t (m Bool) -> m Bool
 andM = allM id
 
--- | A version of @find@ where the predicate can be monadic.
+-- | A version of 'find' where the predicate can be monadic.
 --
 -- > findM (\a -> [a `mod` 7 == 0]) [10, 9 .. 1] == [Just 7]
 findM :: (Foldable t, Monad m) => (a -> m Bool) -> t a -> m (Maybe a)
 findM p = foldr (ifM <$> p <*> (pure . Just)) (pure Nothing)
 
--- | A version of @firstJust@ where the predicate can be monadic.
+-- | A version of 'firstJust' where the predicate can be monadic.
 firstJustM :: (Foldable t, Monad m) => (a -> m (Maybe b)) -> t a -> m (Maybe b)
 firstJustM f = foldl' (\mmb a -> maybeM (f a) (pure . Just) mmb) (pure Nothing)
 
--- | Find the first @Just@ result of applying a function to each element of the structure.
+-- | Find the first 'Just' result of applying a function to each element of the structure.
 --
 -- > firstJust listToMaybe [[], [], [5, 6, 7]] == Just 5
 firstJust :: (Foldable t) => (a -> Maybe b) -> t a -> Maybe b
