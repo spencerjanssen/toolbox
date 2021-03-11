@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e403eb4b31007c2356e736c7d5a7da5231395c084237ea0aa8215bc5655777b2
+-- hash: 509656e4b4de02f801b6f0eae2fc46b957b54f4345a9a93d28aae21c9f9b742f
 
 name:           toolbox
 version:        0.1.0.0
@@ -41,6 +41,7 @@ library
       Data.Monoid.Toolbox
       Data.Ord.Toolbox
       Data.Time.Calendar.Toolbox
+      Data.Time.Format.Toolbox
       Data.Time.LocalTime.Toolbox
       Data.Time.Timeframe
       Data.Time.Toolbox
