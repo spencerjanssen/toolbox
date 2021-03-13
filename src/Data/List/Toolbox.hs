@@ -1,3 +1,5 @@
+{-# LANGUAGE BangPatterns #-}
+
 -- |
 -- Module       : Data.List.Toolbox
 -- Copyright    : (c) Melanie Brown 2021
@@ -17,6 +19,7 @@ module Data.List.Toolbox (
     tuple2,
     tuple3,
     tuple4,
+    sublists,
     (!?),
     enumerate,
     chopInfix,
@@ -55,12 +58,20 @@ module Data.List.Toolbox (
     intersectOn,
     unionOn,
 
+    -- * Unique prefixes
+    takeWhileUnique,
+    dropWhileUnique,
+    takeWhileUniqueOrd,
+    dropWhileUniqueOrd,
+    iterateWhileUnique,
+
     -- * Re-exports
     module Data.List,
 ) where
 
 import Data.Bifunctor (first, second)
 import Data.Coerce (coerce)
+import Data.Foldable (foldlM)
 import qualified Data.Foldable
 import Data.Function.Toolbox (using, (.:))
 import Data.List
@@ -103,6 +114,14 @@ safeTail = list Nothing (const Just)
 -- > safeInit [] == Nothing
 safeInit :: [a] -> Maybe [a]
 safeInit = list Nothing (const $ Just . init)
+
+-- | The list of all ordered sublists.
+--
+-- >>> sublists [1, 5, 9, 13]
+-- [[1,5,9,13],[1,5,9],[1,5,13],[1,5],[1,9,13],[1,9],[1,13],[1],[5,9,13],[5,9],[5,13],[5],[9,13],[9],[13],[]]
+sublists :: [a] -> [[a]]
+sublists [] = [[]]
+sublists (x : xs) = let ys = sublists xs in map (x :) ys ++ ys
 
 -- | Create a pair from the first two elements of a list, if they exist.
 tuple2 :: [a] -> Maybe (a, a)
@@ -343,6 +362,50 @@ splitOn as lx =
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf _ [] = []
 chunksOf n xs = take n xs : chunksOf n (drop n xs)
+
+-- | Keep elements from a list until a duplicate is seen.
+--
+-- > takeWhileUnique [1, 2, 3, 4, 3, 2, 1] == [1, 2, 3, 4]
+takeWhileUnique :: (Eq a) => [a] -> [a]
+takeWhileUnique = either reverse reverse . foldlM unique []
+  where
+    unique :: (Eq a) => [a] -> a -> Either [a] [a]
+    unique acc x =
+        if x `elem` acc
+            then Left acc
+            else Right $ x : acc
+
+-- | Remove elements from a list until a duplicate is seen.
+--
+-- > dropWhileUnique [1, 2, 3, 4, 3, 2, 1] == [3, 2, 1]
+dropWhileUnique :: (Eq a) => [a] -> [a]
+dropWhileUnique = drop . length . takeWhileUnique <*> id
+
+-- | Iterate a function until its result reoccurs.
+--
+-- > iterateWhileUnique (`div` 3) 9 == [9, 3, 1]
+-- > iterateWhileUnique succ 0 == _|_
+iterateWhileUnique :: (Eq a) => (a -> a) -> a -> [a]
+iterateWhileUnique = iterateWhileUnique' []
+  where
+    iterateWhileUnique' :: (Eq a) => [a] -> (a -> a) -> a -> [a]
+    iterateWhileUnique' !acc f !x
+        | x `elem` acc = acc
+        | otherwise = iterateWhileUnique' (acc ++ [x]) f (f x)
+
+-- | Like 'takeWhileUnique', but asymptotically faster due to the 'Ord' constraint.
+takeWhileUniqueOrd :: (Eq a, Ord a) => [a] -> [a]
+takeWhileUniqueOrd = either (reverse . fst) (reverse . fst) . foldlM unique ([], Set.empty)
+  where
+    unique :: (Eq a, Ord a) => ([a], Set a) -> a -> Either ([a], Set a) ([a], Set a)
+    unique (l, acc) x =
+        if x `Set.member` acc
+            then Left (l, acc)
+            else Right (x : l, Set.insert x acc)
+
+-- | Like 'dropWhileUnique', but asymptotically faster due to the 'Ord' constraint.
+dropWhileUniqueOrd :: (Eq a, Ord a) => [a] -> [a]
+dropWhileUniqueOrd = drop . length . takeWhileUniqueOrd <*> id
 
 -- | A version of 'chunksOf' where the parameter can be of any 'Integral' type.
 genericChunksOf :: (Integral n) => n -> [a] -> [[a]]
