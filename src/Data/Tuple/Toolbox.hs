@@ -11,6 +11,7 @@ module Data.Tuple.Toolbox (
     -- * Pairs
     (&&&),
     (***),
+    both,
     assoc,
     unassoc,
 
@@ -37,6 +38,7 @@ module Data.Tuple.Toolbox (
 ) where
 
 import Control.Applicative (liftA2)
+import Control.Monad (join)
 import Data.Bifunctor (bimap)
 import Data.Tuple
 
@@ -53,6 +55,10 @@ infix 1 &&&, ***
 -- > (pred *** succ) (0, 0) == (-1, 1)
 (***) :: (a -> c) -> (b -> d) -> ((a, b) -> (c, d))
 (***) = bimap
+
+-- | Apply the same function to both components.
+both :: (a -> b) -> (a, a) -> (b, b)
+both = join (***)
 
 -- | Associate a pair-inside-a-pair.
 --
