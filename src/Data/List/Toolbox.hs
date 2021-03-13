@@ -28,6 +28,8 @@ module Data.List.Toolbox (
     genericChunksOf,
 
     -- * Predicates over lists
+    count,
+    genericCount,
     takeEnd,
     genericTakeEnd,
     dropEnd,
@@ -58,11 +60,13 @@ module Data.List.Toolbox (
 ) where
 
 import Data.Bifunctor (first, second)
+import Data.Coerce (coerce)
 import qualified Data.Foldable
-import Data.Function.Toolbox (using)
+import Data.Function.Toolbox (using, (.:))
 import Data.List
 import Data.List.NonEmpty (NonEmpty (..), fromList)
 import Data.Maybe (fromJust, listToMaybe)
+import Data.Monoid (Sum (..))
 import Data.Set (Set)
 import qualified Data.Set as Set
 
@@ -187,6 +191,16 @@ merge = mergeBy compare
 -- | A version of 'mergeBy' that accepts a valuation function instead of a comparison.
 mergeOn :: (Ord b) => (a -> b) -> [a] -> [a] -> [a]
 mergeOn f = mergeBy (compare `using` f)
+
+-- | Find the number of elements that satisfy the predicate.
+--
+-- > count p == length . filter p
+count :: (a -> Bool) -> [a] -> Int
+count p = coerce . Data.Foldable.foldMap' (coerce (fromEnum . p) `asTypeOf` (Sum . fromEnum . p))
+
+-- | A version of 'count' that is polymorphic in the return type.
+genericCount :: (Integral n) => (a -> Bool) -> [a] -> n
+genericCount = fromIntegral .: count
 
 -- | A version of 'take' that keeps values from the end of the list.
 --
