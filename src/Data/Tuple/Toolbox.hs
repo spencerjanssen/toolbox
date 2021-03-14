@@ -11,6 +11,8 @@ module Data.Tuple.Toolbox (
     -- * Pairs
     (&&&),
     (***),
+    first,
+    second,
     both,
     assoc,
     unassoc,
@@ -39,7 +41,7 @@ module Data.Tuple.Toolbox (
 
 import Control.Applicative (liftA2)
 import Control.Monad (join)
-import Data.Bifunctor (bimap)
+import qualified Data.Bifunctor (bimap, first, second)
 import Data.Tuple
 
 infix 1 &&&, ***
@@ -54,11 +56,19 @@ infix 1 &&&, ***
 --
 -- > (pred *** succ) (0, 0) == (-1, 1)
 (***) :: (a -> c) -> (b -> d) -> ((a, b) -> (c, d))
-(***) = bimap
+(***) = Data.Bifunctor.bimap
 
 -- | Apply the same function to both components.
 both :: (a -> b) -> (a, a) -> (b, b)
 both = join (***)
+
+-- | Map a function over the first component of a pair.
+first :: (a -> b) -> (a, x) -> (b, x)
+first = Data.Bifunctor.first
+
+-- | Map a function over the second component of a pair.
+second :: (a -> b) -> (x, a) -> (x, b)
+second = Data.Bifunctor.second
 
 -- | Associate a pair-inside-a-pair.
 --
