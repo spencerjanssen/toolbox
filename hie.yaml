@@ -1,4 +1,4 @@
 cradle:
-  stack:
-    - path: "./src"
-      component: "toolbox:lib"
+  cabal:
+    - path: "src"
+      component: "lib:toolbox"

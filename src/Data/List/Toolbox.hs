@@ -71,9 +71,8 @@ module Data.List.Toolbox (
 
 import Data.Bifunctor (first, second)
 import Data.Coerce (coerce)
-import Data.Foldable (foldlM)
-import qualified Data.Foldable
-import Data.Function.Toolbox (using, (.:))
+import Data.Foldable (Foldable (foldMap'), foldlM, toList)
+import Data.Function.Toolbox (using)
 import Data.List
 import Data.List.NonEmpty (NonEmpty (..), fromList)
 import Data.Maybe (fromJust, listToMaybe)
@@ -92,28 +91,28 @@ list n c lx = case lx of
 -- | Get the first element of a (possibly empty) list safely.
 --   A convenient synonym for 'listToMaybe'.
 safeHead :: [a] -> Maybe a
-safeHead = listToMaybe
+safeHead xs = listToMaybe xs
 
 -- | Get the last element of a (possibly empty) list safely.
 --
 -- > safeLast [] == Nothing
 -- > safeLast [2, 3, 4] == Just 4
 safeLast :: [a] -> Maybe a
-safeLast = foldl (const Just) Nothing
+safeLast xs = foldl' (const Just) Nothing xs
 
 -- | Get the tail of a (possibly empty) list safely.
 --
 -- > safeTail [2, 3, 4] == Just [3, 4]
 -- > safeTail [] == Nothing
 safeTail :: [a] -> Maybe [a]
-safeTail = list Nothing (const Just)
+safeTail xs = list Nothing (const Just) xs
 
 -- | Get the 'init' of a (possibly empty) list safely.
 --
 -- > safeInit [2, 3, 4] == Just [2, 3]
 -- > safeInit [] == Nothing
 safeInit :: [a] -> Maybe [a]
-safeInit = list Nothing (const $ Just . init)
+safeInit xs = list Nothing (const $ Just . init) xs
 
 -- | The list of all ordered sublists.
 --
@@ -153,20 +152,20 @@ xs !? 0 = safeHead xs
 -- > anySame [2, 3, 4, 3] == True
 -- > anySame [2, 5, 6, 7] == False
 anySame :: (Eq a) => [a] -> Bool
-anySame = go []
+anySame xs = go [] xs
   where
     go :: (Eq a) => [a] -> [a] -> Bool
-    go seen (x : xs) = x `elem` seen || go (x : seen) xs
+    go seen (y : ys) = y `elem` seen || go (y : seen) ys
     go _ [] = False
 
 -- | /O(n log n)/. Check if the list contains duplicates efficiently.
 --
 -- > \xs -> anySame xs == anySameOrd xs
 anySameOrd :: (Ord a) => [a] -> Bool
-anySameOrd = go Set.empty
+anySameOrd xs = go Set.empty xs
   where
     go :: (Ord a) => Set a -> [a] -> Bool
-    go seen (x : xs) = x `Set.member` seen || go (Set.insert x seen) xs
+    go seen (y : ys) = y `Set.member` seen || go (Set.insert y seen) ys
     go _ [] = False
 
 -- | /O(n)/. Check if all the elements of the list are equal.
@@ -174,7 +173,7 @@ anySameOrd = go Set.empty
 -- > allSame [2, 2, 2] == True
 -- > allSame [2, 3, 4] == False
 allSame :: (Eq a) => [a] -> Bool
-allSame = list True (all . (==))
+allSame xs = list True (all . (==)) xs
 
 -- | Tests if the lists have no elements in common.
 --
@@ -183,11 +182,11 @@ allSame = list True (all . (==))
 -- > disjoint undefined "" == undefined
 -- > disjoint "abc" "cde" == False
 disjoint :: (Eq a) => [a] -> [a] -> Bool
-disjoint = (null .) . intersect
+disjoint xs ys = null $ intersect xs ys
 
 -- | Like 'disjoint', but with better algorithmic complexity.
 disjointOrd :: (Ord a) => [a] -> [a] -> Bool
-disjointOrd = Set.disjoint `using` Set.fromList
+disjointOrd xs ys = (Set.disjoint `using` Set.fromList) xs ys
 
 -- | An ordered list of values of a 'Bounded' 'Enum' type.
 enumerate :: (Enum a, Bounded a) => [a]
@@ -205,21 +204,21 @@ mergeBy f (x : xs) (y : ys) = case f x y of
 --
 -- > merge [2, 3, 6] [1, 4, 7] == [1, 2, 3, 4, 6, 7]
 merge :: (Ord a) => [a] -> [a] -> [a]
-merge = mergeBy compare
+merge xs ys = mergeBy compare xs ys
 
 -- | A version of 'mergeBy' that accepts a valuation function instead of a comparison.
 mergeOn :: (Ord b) => (a -> b) -> [a] -> [a] -> [a]
-mergeOn f = mergeBy (compare `using` f)
+mergeOn f xs ys = mergeBy (compare `using` f) xs ys
 
 -- | Find the number of elements that satisfy the predicate.
 --
 -- > count p == length . filter p
 count :: (a -> Bool) -> [a] -> Int
-count p = coerce . Data.Foldable.foldMap' (coerce (fromEnum . p) `asTypeOf` (Sum . fromEnum . p))
+count p xs = coerce $ foldMap' (coerce (fromEnum . p) `asTypeOf` (Sum . fromEnum . p)) xs
 
 -- | A version of 'count' that is polymorphic in the return type.
 genericCount :: (Integral n) => (a -> Bool) -> [a] -> n
-genericCount = fromIntegral .: count
+genericCount p xs = fromIntegral $ count p xs
 
 -- | A version of 'take' that keeps values from the end of the list.
 --
@@ -243,15 +242,15 @@ dropEnd n xs = if n <= 0 then xs else zipWith const xs (drop n xs)
 --
 -- > takeWhileEnd odd [2, 4, 1, 3, 5] == [1, 3, 5]
 takeWhileEnd :: (a -> Bool) -> [a] -> [a]
-takeWhileEnd p = reverse . takeWhile p . reverse
+takeWhileEnd p xs = reverse . takeWhile p $ reverse xs
 
 -- | A version of 'takeEnd' where the parameneter can be of any 'Integral' type.
 genericTakeEnd :: (Integral n) => n -> [a] -> [a]
-genericTakeEnd = takeEnd . fromIntegral
+genericTakeEnd xs = takeEnd $ fromIntegral xs
 
 -- | A version of 'dropEnd' where the parameter can be of any 'Integral' type.
 genericDropEnd :: Int -> [a] -> [a]
-genericDropEnd = dropEnd . fromIntegral
+genericDropEnd xs = dropEnd $ fromIntegral xs
 
 -- | A version of 'span' that runs from the end of the list.
 --
@@ -271,7 +270,7 @@ breakEnd p xs = (dropWhileEnd p xs, takeWhileEnd p xs)
 chopInfix :: (Eq a) => NonEmpty a -> [a] -> ([a], [a])
 chopInfix _ [] = ([], [])
 chopInfix as lx@(x : xs) =
-    if Data.Foldable.toList as `isPrefixOf` lx
+    if toList as `isPrefixOf` lx
         then ([], lx)
         else first (x :) $ chopInfix as xs
 
@@ -289,27 +288,27 @@ removed as xs = second (drop (length as)) $ chopInfix (fromList as) xs
 -- > replaceFirst (fromList "z") "" "azbzc" == "abzc"
 -- > replaceFirst (fromList "z") "xy" "azbzc" == "axybzc"
 replaceFirst :: (Eq a) => NonEmpty a -> [a] -> [a] -> [a]
-replaceFirst as bs = (\(pre, post) -> pre ++ bs ++ post) . removed (Data.Foldable.toList as)
+replaceFirst as bs xs = (\(pre, post) -> pre ++ bs ++ post) $ removed (toList as) xs
 
 -- | A version of 'groupBy' that accepts a user-defined function on which to test equality.
 --
 -- > groupOn fst [(1, 3), (1, 4), (2, 4)] == [[(1, 3), (1, 4)], [(2, 4)]]
 -- > groupOn snd [(1, 3), (1, 4), (2, 4)] == [[(1, 3)], [(1, 4), (2, 4)]]
 groupOn :: (Eq b) => (a -> b) -> [a] -> [[a]]
-groupOn f = groupBy ((==) `using` f)
+groupOn f xs = groupBy ((==) `using` f) xs
 
 -- | A composition of 'group' and 'sort'.
 --
 -- > groupSort [1, 3, 4, 3, 1] == [[1, 1], [3, 3], [4]]
 groupSort :: (Ord a) => [a] -> [[a]]
-groupSort = group . sort
+groupSort xs = group $ sort xs
 
 -- | A version of 'groupSort' that accepts a user-defined comparison function.
 --
 -- > groupSortOn fst [(1, 3), (2, 4), (1, 4)] == [[(1, 3), (1, 4)], [(2, 4)]]
 -- > groupSortOn snd [(1, 3), (2, 4), (1, 4)] == [[(1, 3)], [(2, 4), (1, 4)]]
 groupSortOn :: (Ord b) => (a -> b) -> [a] -> [[a]]
-groupSortOn f = map (map (snd . getFst)) . groupSort . map (mkFst f)
+groupSortOn f xs = map (map (snd . getFst)) . groupSort $ map (mkFst f) xs
 
 -- | A version of 'intersectBy' that accepts a user-defined function on which to test equality.
 --   Prefers elements from the first list.
@@ -317,7 +316,7 @@ groupSortOn f = map (map (snd . getFst)) . groupSort . map (mkFst f)
 -- > intersectOn abs [-1, -2] [2, 3] == [-2]
 -- > intersectOn signum [-1, -2] [2, 3] == []
 intersectOn :: (Eq b) => (a -> b) -> [a] -> [a] -> [a]
-intersectOn f = intersectBy ((==) `using` f)
+intersectOn f xs = intersectBy ((==) `using` f) xs
 
 -- | A version of 'unionBy' that accepts a user-defined function on which to test equality.
 --   Prefers elements from the first list.
@@ -325,7 +324,7 @@ intersectOn f = intersectBy ((==) `using` f)
 -- > unionOn abs [-1, -2] [2, 3] == [-1, -2, 3]
 -- > unionOn abs [-1] [2, 3] == [-1, 2, 3]
 unionOn :: (Eq b) => (a -> b) -> [a] -> [a] -> [a]
-unionOn f = unionBy ((==) `using` f)
+unionOn f xs = unionBy ((==) `using` f) xs
 
 -- | @'replace' as bs xs@ substitutes the sublist @as@ with @bs@ each place @as@ occurs in @xs@.
 --   To replace only the first occurrence, use 'replaceFirst'.
@@ -339,7 +338,7 @@ replace la bs lx@(x : xs) =
         then bs ++ replace la bs (fromJust (stripPrefix as lx))
         else x : replace la bs xs
   where
-    as = Data.Foldable.toList la
+    as = toList la
 
 -- | A version of 'replace' where instead of conjoining the prefix and suffix,
 --   they are kept as separate sublists.
@@ -367,7 +366,7 @@ chunksOf n xs = take n xs : chunksOf n (drop n xs)
 --
 -- > takeWhileUnique [1, 2, 3, 4, 3, 2, 1] == [1, 2, 3, 4]
 takeWhileUnique :: (Eq a) => [a] -> [a]
-takeWhileUnique = either reverse reverse . foldlM unique []
+takeWhileUnique xs = either reverse reverse $ foldlM unique [] xs
   where
     unique :: (Eq a) => [a] -> a -> Either [a] [a]
     unique acc x =
@@ -379,23 +378,23 @@ takeWhileUnique = either reverse reverse . foldlM unique []
 --
 -- > dropWhileUnique [1, 2, 3, 4, 3, 2, 1] == [3, 2, 1]
 dropWhileUnique :: (Eq a) => [a] -> [a]
-dropWhileUnique = drop . length . takeWhileUnique <*> id
+dropWhileUnique xs = drop (length $ takeWhileUnique xs) xs
 
 -- | Iterate a function until its result reoccurs.
 --
 -- > iterateWhileUnique (`div` 3) 9 == [9, 3, 1]
 -- > iterateWhileUnique succ 0 == _|_
 iterateWhileUnique :: (Eq a) => (a -> a) -> a -> [a]
-iterateWhileUnique = iterateWhileUnique' []
+iterateWhileUnique f xs = iterateWhileUnique' [] f xs
   where
     iterateWhileUnique' :: (Eq a) => [a] -> (a -> a) -> a -> [a]
-    iterateWhileUnique' !acc f !x
+    iterateWhileUnique' !acc g !x
         | x `elem` acc = acc
-        | otherwise = iterateWhileUnique' (acc ++ [x]) f (f x)
+        | otherwise = iterateWhileUnique' (acc ++ [x]) g (g x)
 
 -- | Like 'takeWhileUnique', but asymptotically faster due to the 'Ord' constraint.
 takeWhileUniqueOrd :: (Eq a, Ord a) => [a] -> [a]
-takeWhileUniqueOrd = either (reverse . fst) (reverse . fst) . foldlM unique ([], Set.empty)
+takeWhileUniqueOrd xs = either (reverse . fst) (reverse . fst) $ foldlM unique ([], Set.empty) xs
   where
     unique :: (Eq a, Ord a) => ([a], Set a) -> a -> Either ([a], Set a) ([a], Set a)
     unique (l, acc) x =
@@ -405,11 +404,11 @@ takeWhileUniqueOrd = either (reverse . fst) (reverse . fst) . foldlM unique ([],
 
 -- | Like 'dropWhileUnique', but asymptotically faster due to the 'Ord' constraint.
 dropWhileUniqueOrd :: (Eq a, Ord a) => [a] -> [a]
-dropWhileUniqueOrd = drop . length . takeWhileUniqueOrd <*> id
+dropWhileUniqueOrd xs = drop (length $ takeWhileUniqueOrd xs) xs
 
 -- | A version of 'chunksOf' where the parameter can be of any 'Integral' type.
 genericChunksOf :: (Integral n) => n -> [a] -> [[a]]
-genericChunksOf = chunksOf . fromIntegral
+genericChunksOf n xs = chunksOf (fromIntegral n) xs
 
 newtype Fst a b = Fst {getFst :: (b, a)}
 instance Eq b => Eq (Fst a b) where (==) = (==) `using` (fst . getFst)
