@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 -- |
 -- Module       : Data.Tuple.Toolbox
 -- Copyright    : (c) Melanie Brown 2021
@@ -16,6 +18,8 @@ module Data.Tuple.Toolbox (
     both,
     assoc,
     unassoc,
+    firstF,
+    secondF,
 
     -- * Triples
     fst3,
@@ -24,6 +28,9 @@ module Data.Tuple.Toolbox (
     first3,
     second3,
     third3,
+    first3F,
+    second3F,
+    third3F,
 
     -- * 4-tuples
     frst4,
@@ -34,6 +41,10 @@ module Data.Tuple.Toolbox (
     second4,
     third4,
     fourth4,
+    first4F,
+    second4F,
+    third4F,
+    fourth4F,
 
     -- * Re-exports
     module Data.Tuple,
@@ -69,6 +80,14 @@ first = Data.Bifunctor.first
 -- | Map a function over the second component of a pair.
 second :: (a -> b) -> (x, a) -> (x, b)
 second = Data.Bifunctor.second
+
+-- | Map a functorial function over the first component a pair, so that the whole pair is inside the functor.
+firstF :: (Functor f) => (a -> f b) -> (a, x) -> f (b, x)
+firstF f (a, x) = (,x) <$> f a
+
+-- | Map a functorial function over the second component a pair, so that the whole pair is inside the functor.
+secondF :: (Functor f) => (a -> f b) -> (x, a) -> f (x, b)
+secondF f (x, a) = (x,) <$> f a
 
 -- | Associate a pair-inside-a-pair.
 --
@@ -112,6 +131,24 @@ second3 f (a, b, c) = (a, f b, c)
 third3 :: (c -> x) -> (a, b, c) -> (a, b, x)
 third3 f (a, b, c) = (a, b, f c)
 
+-- | Map a functorial function over the first component of a triple, so that the whole triple is inside the functor.
+--
+-- > first3F (const Nothing) (0, 0, 0) == Nothing
+first3F :: (Functor f) => (a -> f x) -> (a, b, c) -> f (x, b, c)
+first3F f (a, b, c) = (,b,c) <$> f a
+
+-- | Map a functorial function over the second component of a triple, so that the whole triple is inside the functor.
+--
+-- > second3F (Just . pred) (0, 0, 0) == Just (0, -1, 0)
+second3F :: (Functor f) => (b -> f x) -> (a, b, c) -> f (a, x, c)
+second3F f (a, b, c) = (a,,c) <$> f b
+
+-- | Map a functorial function over the third component of a triple, so that the whole triple is inside the functor.
+--
+-- > third3F (Just . succ) (0, 0, 0) == Just (0, 0, 1)
+third3F :: (Functor f) => (c -> f x) -> (a, b, c) -> f (a, b, x)
+third3F f (a, b, c) = (a,b,) <$> f c
+
 -- | Get the first component of a 4-tuple.
 frst4 :: (a, b, c, d) -> a
 frst4 (a, _, _, _) = a
@@ -151,3 +188,21 @@ third4 f (a, b, c, d) = (a, b, f c, d)
 -- > fourth4 succ (0, 0, 0, 0) == (0, 0, 0, 1)
 fourth4 :: (d -> x) -> (a, b, c, d) -> (a, b, c, x)
 fourth4 f (a, b, c, d) = (a, b, c, f d)
+
+-- | Map a function over the first component of a 4-tuple, so that the entire tuple is inside the functor.
+first4F :: (Functor f) => (a -> f x) -> (a, b, c, d) -> f (x, b, c, d)
+first4F f (a, b, c, d) = (,b,c,d) <$> f a
+
+-- | Map a function over the second component of a 4-tuple, so that the entire tuple is inside the functor.
+second4F :: (Functor f) => (b -> f x) -> (a, b, c, d) -> f (a, x, c, d)
+second4F f (a, b, c, d) = (a,,c,d) <$> f b
+
+-- | Map a function over the third component of a 4-tuple, so that the entire tuple is inside the functor.
+--
+-- > third4F succ (0, 0, 0, 0) == (0, 0, 1, 0)
+third4F :: (Functor f) => (c -> f x) -> (a, b, c, d) -> f (a, b, x, d)
+third4F f (a, b, c, d) = (a,b,,d) <$> f c
+
+-- | Map a function over the fourth component of a 4-tuple, so that the entire tuple is inside the functor.
+fourth4F :: (Functor f) => (d -> f x) -> (a, b, c, d) -> f (a, b, c, x)
+fourth4F f (a, b, c, d) = (a,b,c,) <$> f d
