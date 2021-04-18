@@ -16,6 +16,7 @@ module Data.List.Toolbox (
     safeLast,
     safeTail,
     safeInit,
+    unsnoc,
     tuple2,
     tuple3,
     tuple4,
@@ -113,6 +114,14 @@ safeTail xs = list Nothing (const Just) xs
 -- > safeInit [] == Nothing
 safeInit :: [a] -> Maybe [a]
 safeInit xs = list Nothing (const $ Just . init) xs
+
+-- | Get the 'init' and 'last' of a (possibly empty) list safely.
+--
+-- > unsnoc [] == Nothing
+-- > unsnoc [1, 2, 3] == Just ([1, 2], 3)
+unsnoc :: [a] -> Maybe ([a], a)
+unsnoc [] = Nothing
+unsnoc as = Just (init as, last as)
 
 -- | The list of all ordered sublists.
 --
