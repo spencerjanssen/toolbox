@@ -37,9 +37,15 @@ module Data.Time.Timeframe (
     intersect,
     difference,
     unions,
+
+    -- * 'Coverage'
+    Coverage (..),
+    cover,
+    coverageDuration,
 ) where
 
-import Data.List (sort, sortOn)
+import Control.Monad (liftM2)
+import Data.List (foldl', sort, sortOn)
 import Data.Ord.Toolbox (Down (..), maxOn, minOn)
 import Data.Time
 
@@ -133,7 +139,7 @@ union tf1@(Timeframe s1 e1) tf2@(Timeframe s2 e2) =
 -- | The set intersection of two timeframes viewed as intervals.
 intersect :: Timeframe -> Timeframe -> Maybe Timeframe
 intersect (Timeframe s1 e1) (Timeframe s2 e2) =
-    if s2 `compareStartEnd` e1 /= GT || s1 `compareStartEnd` e2 /= GT
+    if s2 `compareStartEnd` e1 == LT && s1 `compareStartEnd` e2 == LT
         then Just $ Timeframe (max s1 s2) (min e1 e2)
         else Nothing
 
@@ -178,13 +184,27 @@ difference tf1@(Timeframe s1 e1) tf2@(Timeframe s2 e2) =
         Just (Timeframe si ei) ->
             if si <= s1 && e1 <= ei
                 then Right Nothing
-                else Left (Timeframe s1 (FrameEnd $ minStartEnd si e1), Timeframe (FrameStart $ maxStartEnd s2 ei) e2)
+                else Left (Timeframe s1 (FrameEnd $ minStartEnd si e2), Timeframe (FrameStart $ maxStartEnd s2 ei) e1)
 
 -- | Combine all the 'Timeframe's into the largest possible blocks.
 unions :: [Timeframe] -> [Timeframe]
-unions = sort . unions' . sortOn Down . unions' . sort
+unions = filter ((/= Just 0) . tfDuration) . sort . unions' . sortOn Down . unions' . sort
   where
     unions' :: [Timeframe] -> [Timeframe]
     unions' (x : y : xs) = unions' $ ((\(a, b) -> [a, b]) `either` (: []) $ union x y) ++ xs
     unions' (x : xs) = x : unions' xs
     unions' [] = []
+
+-- | A 'Coverage' is a list of timeframes that forms a monoid under 'unions'.
+newtype Coverage = Coverage {getCoverage :: [Timeframe]} deriving (Eq, Ord, Show)
+
+instance Semigroup Coverage where
+    Coverage tfs1 <> Coverage tfs2 = Coverage . unions $ tfs1 <> tfs2
+instance Monoid Coverage where mempty = Coverage []
+
+-- | Compute the coverage of a single 'Timeframe'.
+cover :: Timeframe -> Coverage
+cover tf = Coverage [tf]
+
+coverageDuration :: Coverage -> Maybe NominalDiffTime
+coverageDuration = foldl' (liftM2 (+)) (Just 0) . map tfDuration . getCoverage
