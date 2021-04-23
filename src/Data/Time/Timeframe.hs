@@ -48,6 +48,7 @@ import Control.Monad (liftM2)
 import Data.List (foldl', sort, sortOn)
 import Data.Ord.Toolbox (Down (..), maxOn, minOn)
 import Data.Time
+import Debug.Trace (traceShowId)
 
 -- | The earliest point of a 'Timeframe'.
 --
@@ -188,10 +189,12 @@ difference tf1@(Timeframe s1 e1) tf2@(Timeframe s2 e2) =
 
 -- | Combine all the 'Timeframe's into the largest possible blocks.
 unions :: [Timeframe] -> [Timeframe]
-unions = filter ((/= Just 0) . tfDuration) . sort . unions' . sortOn Down . unions' . sort
+unions = sort . unions' . sortOn Down . unions' . sort
   where
     unions' :: [Timeframe] -> [Timeframe]
-    unions' (x : y : xs) = unions' $ ((\(a, b) -> [a, b]) `either` (: []) $ union x y) ++ xs
+    unions' (x : y : xs) = case x `union` y of
+        Right tf -> tf : unions' xs
+        Left (tf1, tf2) -> tf1 : unions' (tf2 : xs)
     unions' (x : xs) = x : unions' xs
     unions' [] = []
 
