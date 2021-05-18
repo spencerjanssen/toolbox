@@ -48,7 +48,6 @@ import Control.Monad (liftM2)
 import Data.List (foldl', sort, sortOn)
 import Data.Ord.Toolbox (Down (..), maxOn, minOn)
 import Data.Time
-import Debug.Trace (traceShowId)
 
 -- | The earliest point of a 'Timeframe'.
 --
@@ -140,7 +139,7 @@ union tf1@(Timeframe s1 e1) tf2@(Timeframe s2 e2) =
 -- | The set intersection of two timeframes viewed as intervals.
 intersect :: Timeframe -> Timeframe -> Maybe Timeframe
 intersect (Timeframe s1 e1) (Timeframe s2 e2) =
-    if s2 `compareStartEnd` e1 == LT && s1 `compareStartEnd` e2 == LT
+    if s2 `compareStartEnd` e1 /= GT && s1 `compareStartEnd` e2 /= GT
         then Just $ Timeframe (max s1 s2) (min e1 e2)
         else Nothing
 
