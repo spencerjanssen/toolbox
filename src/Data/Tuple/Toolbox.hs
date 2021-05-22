@@ -11,6 +11,7 @@
 -- This module re-exports the above library, so modules need only import 'Data.Tuple.Toolbox'.
 module Data.Tuple.Toolbox (
     -- * Pairs
+    dup,
     (&&&),
     (***),
     first,
@@ -20,6 +21,8 @@ module Data.Tuple.Toolbox (
     unassoc,
     firstF,
     secondF,
+    toFirst,
+    toSecond,
 
     -- * Triples
     fst3,
@@ -31,6 +34,10 @@ module Data.Tuple.Toolbox (
     first3F,
     second3F,
     third3F,
+    pairFst,
+    unpairFst,
+    pairSnd,
+    unpairSnd,
 
     -- * 4-tuples
     frst4,
@@ -54,6 +61,10 @@ import Control.Applicative (liftA2)
 import Control.Monad (join)
 import qualified Data.Bifunctor (bimap, first, second)
 import Data.Tuple
+
+-- | Duplicate a value.
+dup :: a -> (a, a)
+dup a = (a, a)
 
 infix 1 &&&, ***
 
@@ -89,6 +100,20 @@ firstF f (a, x) = (,x) <$> f a
 secondF :: (Functor f) => (a -> f b) -> (x, a) -> f (x, b)
 secondF f (x, a) = (x,) <$> f a
 
+-- | Apply a functorial function and keep the argument in the second component.
+--
+-- > toFirst (:[]) 3 == ([3], 3)
+-- > toFirst f x == firstF (const . f) (dup x)
+toFirst :: (Functor f) => (a -> f b) -> a -> f (b, a)
+toFirst f a = (,a) <$> f a
+
+-- | Apply a functorial function and keep the argument in the first component.
+--
+-- > toSecond (:[]) 3 == ([3], 3)
+-- > toSecond f x == secondF (const . f) (dup x)
+toSecond :: (Functor f) => (a -> f b) -> a -> f (a, b)
+toSecond f a = (a,) <$> f a
+
 -- | Associate a pair-inside-a-pair.
 --
 -- > assoc . unassoc == id
@@ -100,6 +125,22 @@ assoc (a, (b, c)) = ((a, b), c)
 -- > unassoc . assoc == id
 unassoc :: ((a, b), c) -> (a, (b, c))
 unassoc ((a, b), c) = (a, (b, c))
+
+-- | Flatten a 'fst'-nested pair into a 3-tuple.
+unpairFst :: ((a, b), c) -> (a, b, c)
+unpairFst ((a, b), c) = (a, b, c)
+
+-- | Flatten a 'snd'-nested pair into a 3-tuple.
+unpairSnd :: (a, (b, c)) -> (a, b, c)
+unpairSnd (a, (b, c)) = (a, b, c)
+
+-- | Associate a 3-tuple into a 'fst'-nested pair.
+pairFst :: (a, b, c) -> ((a, b), c)
+pairFst (a, b, c) = ((a, b), c)
+
+-- | Associate a 3-tuple into a 'snd'-nested pair.
+pairSnd :: (a, b, c) -> (a, (b, c))
+pairSnd (a, b, c) = (a, (b, c))
 
 -- | Get the first component of a triple.
 fst3 :: (a, b, c) -> a
