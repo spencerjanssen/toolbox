@@ -14,6 +14,11 @@ module Data.List.NonEmpty.Toolbox (
     (<||),
     (||>),
 
+    -- * Using regular lists
+    withNonEmpty,
+    whenNonEmpty,
+    whenNonEmptyM,
+
     -- * 'Foldable' specializations
     fold1,
     foldMap1,
@@ -39,6 +44,7 @@ module Data.List.NonEmpty.Toolbox (
     module Data.List.NonEmpty,
 ) where
 
+import Control.Monad.Toolbox
 import qualified Data.Foldable.Toolbox as FT
 import Data.Function.Toolbox (using)
 import Data.List.NonEmpty
@@ -72,6 +78,21 @@ xs |> x = xs <> pure x
 (<||) :: [a] -> NonEmpty a -> NonEmpty a
 lx <|| nx = foldr cons nx lx
 
+-- | Use a 'NonEmpty' function on a regular list safely.
+--
+-- > withNonEmpty [1, 2, 3] maximum1 == Just 3
+-- > withNonEmpty [] maximum1 == Nothing
+withNonEmpty :: [a] -> (NonEmpty a -> b) -> Maybe b
+withNonEmpty xs f = f <$> nonEmpty xs
+
+-- | A version of 'Control.Monad.Toolbox.whenJust' for lists.
+whenNonEmpty :: (Monad m) => [a] -> (NonEmpty a -> m ()) -> m ()
+whenNonEmpty xs f = whenJust (nonEmpty xs) f
+
+-- | A version of 'Control.Monad.Toolbox.whenJust' for lists.
+whenNonEmptyM :: (Monad m) => m [a] -> (NonEmpty a -> m ()) -> m ()
+whenNonEmptyM xs f = whenJustM (nonEmpty <$> xs) f
+
 -- | A specialized version of 'fold1' to 'NonEmpty' lists.
 fold1 :: (Semigroup m) => NonEmpty m -> m
 fold1 xs = fromJust $ FT.fold1 xs
@@ -84,49 +105,49 @@ foldMap1 f xs = fromJust $ FT.foldMap1 f xs
 foldMap1' :: (Semigroup m) => (a -> m) -> NonEmpty a -> m
 foldMap1' f xs = fromJust $ FT.foldMap1' f xs
 
--- | A specialized version of 'maximum' to 'NonEmpty' lists.
+-- | A specialized version of 'Data.List.maximum' to 'NonEmpty' lists.
 --
 -- > maximum1 (1 :| [2, 3, 4]) == 4
 maximum1 :: (Ord a) => NonEmpty a -> a
 maximum1 xs = fromJust $ FT.maximumOn id xs
 
--- | A specialized version of 'minimum' to 'NonEmpty' lists.
+-- | A specialized version of 'Data.List.minimum' to 'NonEmpty' lists.
 --
 -- > minimum1 (1 :| [2, 3, 4]) == 1
 minimum1 :: (Ord a) => NonEmpty a -> a
 minimum1 xs = fromJust $ FT.minimumOn id xs
 
--- | A specialized version of 'maximumBy' to 'NonEmpty' lists.
+-- | A specialized version of 'Data.List.maximumBy' to 'NonEmpty' lists.
 --
 -- > maximumBy1 (comparing negate) (1 :| [2, 3, 4]) == 1
 maximumBy1 :: (a -> a -> Ordering) -> NonEmpty a -> a
 maximumBy1 xs = FT.maximumBy xs
 
--- | A specialized version of 'minimumBy' to 'NonEmpty' lists.
+-- | A specialized version of 'Data.List.minimumBy' to 'NonEmpty' lists.
 --
 -- > minimumBy1 (comparing negate) (1 :| [2, 3, 4]) == 4
 minimumBy1 :: (a -> a -> Ordering) -> NonEmpty a -> a
 minimumBy1 xs = FT.minimumBy xs
 
--- | A specialized version of 'maximumOn' to 'NonEmpty' lists.
+-- | A specialized version of 'Data.Foldable.Toolbox.maximumOn' to 'NonEmpty' lists.
 --
 -- > maximumOn1 negate (1 :| [2, 3, 4]) == -1
 maximumOn1 :: (Ord b) => (a -> b) -> NonEmpty a -> a
 maximumOn1 f xs = fromJust $ FT.maximumOn f xs
 
--- | A specialized version of 'minimumOn' to 'NonEmpty' lists.
+-- | A specialized version of 'Data.Foldable.Toolbox.minimumOn' to 'NonEmpty' lists.
 --
 -- > minimumOn1 negate (1 :| [2, 3, 4]) == -4
 minimumOn1 :: (Ord b) => (a -> b) -> NonEmpty a -> a
 minimumOn1 f xs = fromJust $ FT.minimumOn f xs
 
--- | A specialized version of 'maximumOf' to 'NonEmpty' lists.
+-- | A specialized version of 'Data.Foldable.Toolbox.maximumOf' to 'NonEmpty' lists.
 --
 -- > maximumOf1 negate (1 :| [2, 3, 4]) == -1
 maximumOf1 :: (Ord b) => (a -> b) -> NonEmpty a -> b
 maximumOf1 f xs = fromJust $ FT.maximumOf f xs
 
--- | A specialized version of 'minimumOf' to 'NonEmpty' lists.
+-- | A specialized version of 'Data.Foldable.Toolbox.minimumOf' to 'NonEmpty' lists.
 --
 -- > minimumOf1 negate (1 :| [2, 3, 4]) == -4
 minimumOf1 :: (Ord b) => (a -> b) -> NonEmpty a -> b

@@ -57,10 +57,14 @@ import Data.Time
 -- > FixedStart lt <==> FrameStart (Just lt)
 newtype FrameStart = FrameStart {getFrameStart :: Maybe LocalTime} deriving (Eq, Ord, Show)
 
+-- | The value representing an open-ended past for a 'FrameStart'.
 pattern BigBang :: FrameStart
 pattern BigBang = FrameStart Nothing
+
+-- | The fixed time representing the start of a 'Timeframe'.
 pattern FixedStart :: LocalTime -> FrameStart
 pattern FixedStart lt = FrameStart (Just lt)
+
 {-# COMPLETE BigBang, FixedStart #-}
 
 -- | The latest point of a 'Timeframe'.
@@ -71,10 +75,14 @@ pattern FixedStart lt = FrameStart (Just lt)
 -- > FixedEnd lt <==> FrameEnd (Just lt)
 newtype FrameEnd = FrameEnd {getFrameEnd :: Maybe LocalTime} deriving (Eq, Show)
 
+-- | The value representing an open-ended future for a 'FrameEnd'.
 pattern HeatDeath :: FrameEnd
 pattern HeatDeath = FrameEnd Nothing
+
+-- | The fixed time representing the end of a 'Timeframe'.
 pattern FixedEnd :: LocalTime -> FrameEnd
 pattern FixedEnd lt = FrameEnd (Just lt)
+
 {-# COMPLETE HeatDeath, FixedEnd #-}
 
 instance Ord FrameEnd where
@@ -208,5 +216,6 @@ instance Monoid Coverage where mempty = Coverage []
 cover :: Timeframe -> Coverage
 cover tf = Coverage [tf]
 
+-- | Compute the total duration of a 'Coverage'.
 coverageDuration :: Coverage -> Maybe NominalDiffTime
 coverageDuration = foldl' (liftM2 (+)) (Just 0) . map tfDuration . getCoverage
