@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c3ab5f35cb2df00092a62e846caced21f7669b9e68b2a76f96bc4d6dd48ab5e8
+-- hash: 43c17cd378d0b2a2e83c63c1db636b8d72e96bd04322c26797454e95452bd419
 
 name:           toolbox
-version:        0.1.2.0
+version:        0.2.0.0
 description:    Please see the README on GitHub at <https://github.com/bi-functor/toolbox#readme>
 homepage:       https://github.com/bi-functor/toolbox#readme
 bug-reports:    https://github.com/bi-functor/toolbox/issues
@@ -36,6 +36,7 @@ library
       Data.IntMap.Monoidal.Strict
       Data.List.NonEmpty.Toolbox
       Data.List.Toolbox
+      Data.Map.Monoidal.Deep
       Data.Map.Monoidal.Lazy
       Data.Map.Monoidal.Strict
       Data.Monoid.Toolbox

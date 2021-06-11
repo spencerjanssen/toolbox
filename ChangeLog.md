@@ -1,5 +1,8 @@
 # Changelog for toolbox
 
+## v0.2.0.0
+This release delivers a strict, nested map type called `DeepMap`, parametrized by a type-level list of keys reaching a single value type, which is ideally a `Semigroup`. The interface is presented in the style of `Data.Map` from the `containers` package, with additional versions of common functions for ease of use with `DeepMap`s of depth up to 5.
+
 ## v0.1.2.0
 New functions:
 - `Data.Map.Monoidal`
