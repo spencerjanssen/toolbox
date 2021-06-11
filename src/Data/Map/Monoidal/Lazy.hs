@@ -4,6 +4,7 @@
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE ViewPatterns #-}
 
 -- |
 -- Module       : Data.Map.Monoidal.Lazy
@@ -139,6 +140,7 @@ module Data.Map.Monoidal.Lazy (
     keys,
     assocs,
     keysSet,
+    invertKeys,
 
     -- ** Lists
     toList,
@@ -329,23 +331,22 @@ fromDistinctDescList = Map . Map.fromDistinctDescList
 
 -- | /O(log n)/. Insert a new key and value in the map. If the key is already
 --   present in the map, the associated value is combined with the new value using '(<>)'.
---   To overwrite the existing value instead, use 'overwrite'.
---
---   __NOTE:__ For noncommutative semigroups (e.g. lists), the value at key @k@ in @'insert' k new m@
---   will be @new <> old@. Use @'insertWith' (flip (<>)) k new@ if you want @old <> new@.
+--   The value at key @k@ in @'insert' k new m@ will be @old <> new@,
+--   so the overwriting behaviour from @containers@ can be recovered
+--   by wrapping values in 'Data.Semigroup.Last' or by using 'overwrite'.
 insert :: (Ord k, Semigroup a) => k -> a -> Map k a -> Map k a
-insert k a (Map m) = Map $ Map.insertWith (<>) k a m
+insert k a (Map m) = Map $ Map.insertWith (flip (<>)) k a m
 
 -- | /O(log n)/. Insert a new key and value in the map. If the key is already
 --   present in the map, the associated value is replaced by the new value.
 --
--- > 'overwrite' == 'insertWith' 'const'
+-- > overwrite == insertWith const
 overwrite :: (Ord k) => k -> a -> Map k a -> Map k a
 overwrite k a (Map m) = Map $ Map.insert k a m
 
 -- | /O(log n)/. Combines replacement and retrieval.
 --
--- > 'overwriteLookup' k a == 'lookup' k &&& 'overwrite' k a
+-- > overwriteLookup k a == lookup k &&& overwrite k a
 overwriteLookup :: (Ord k) => k -> a -> Map k a -> (Maybe a, Map k a)
 overwriteLookup k a (Map m) = Map <$> Map.insertLookupWithKey (const const) k a m
 
@@ -353,18 +354,18 @@ overwriteLookup k a (Map m) = Map <$> Map.insertLookupWithKey (const const) k a 
 --   using the supplied function.
 --
 --   @'insertWith' f k new m@ will insert @new@ at @k@ if there is no value present,
---   or @f new old@ if there was already a value @old@ at @k@.
+--   or overwrite with @old `f` new@ if there was already a value @old@ at @k@.
 insertWith :: (Ord k) => (a -> a -> a) -> k -> a -> Map k a -> Map k a
-insertWith f k a (Map m) = Map $ Map.insertWith f k a m
+insertWith f k a (Map m) = Map $ Map.insertWith (flip f) k a m
 
 -- | /O(log n)/. Insert with a function, combining new value and old value
 --   using the supplied function.
 --
 --   @'insertWith' f k new m@ will insert @new@ at @k@ if there is no value present,
---   or @f k new old@ if there was already a value @old@ at @k@.
+--   or overwrite with @f k old new@ if there was already a value @old@ at @k@.
 --   The key passed to @f@ is the one passed to 'insertWithKey', not the one present in the map.
 insertWithKey :: (Ord k) => (k -> a -> a -> a) -> k -> a -> Map k a -> Map k a
-insertWithKey f k a (Map m) = Map $ Map.insertWithKey f k a m
+insertWithKey f k a (Map m) = Map $ Map.insertWithKey (flip . f) k a m
 
 -- | /O(log n)/. Combines insertion and retrieval.
 --
@@ -663,11 +664,11 @@ mapMaybe f (Map m) = Map $ Map.mapMaybe f m
 mapMaybeWithKey :: (k -> a -> Maybe b) -> Map k a -> Map k b
 mapMaybeWithKey f (Map m) = Map $ Map.mapMaybeWithKey f m
 
--- | /O(n)/. Map values and collect the 'Just' results.
+-- | /O(n)/. Map values and collect the 'Left' and 'Right' results separately.
 mapEither :: (a -> Either b c) -> Map k a -> (Map k b, Map k c)
 mapEither f (Map m) = bimap Map Map $ Map.mapEither f m
 
--- | /O(n)/. Map values and collect the 'Just' results.
+-- | /O(n)/. Map values and collect the 'Left' and 'Right' results separately.
 mapEitherWithKey :: (k -> a -> Either b c) -> Map k a -> (Map k b, Map k c)
 mapEitherWithKey f (Map m) = bimap Map Map $ Map.mapEitherWithKey f m
 
@@ -810,3 +811,7 @@ minViewWithKey (Map m) = fmap Map <$> Map.minViewWithKey m
 --   and the map stripped of that element, or 'Nothing' if passed an empty map.
 maxViewWithKey :: Map k a -> Maybe ((k, a), Map k a)
 maxViewWithKey (Map m) = fmap Map <$> Map.maxViewWithKey m
+
+-- | "Transpose" a nested map, by swapping the outer two "dimensions".
+invertKeys :: (Ord j, Ord k, Semigroup a) => Map j (Map k a) -> Map k (Map j a)
+invertKeys (assocs -> jkas) = fromList [(k, singleton j a) | (j, m) <- jkas, (k, a) <- assocs m]

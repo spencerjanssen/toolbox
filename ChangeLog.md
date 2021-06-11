@@ -1,5 +1,14 @@
 # Changelog for toolbox
 
+## v0.1.2.0
+New functions:
+- `Data.Map.Monoidal`
+  - `invertKeys :: (Ord j, Ord k, Semigroup a) => Map j (Map k a) -> Map k (Map j a)`
+- `Control.Monad.Toolbox`
+  - `(<<$>>) :: (Functor f, Functor g) => (a -> b) -> g (f a) -> g (f b)`
+  - Re-export `Data.Functor`
+Documentation fixes in `Data.Map.Monoidal`
+
 ## v0.1.1.0
 New functions:
 - `Data.Tuple.Toolbox`

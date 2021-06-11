@@ -10,6 +10,9 @@
 --
 -- This module re-exports the above modules, so modules need only import 'Control.Monad.Toolbox'.
 module Control.Monad.Toolbox (
+    -- * Functorial operators
+    (<<$>>),
+
     -- * Applicative operators
     guarded,
 
@@ -49,14 +52,20 @@ module Control.Monad.Toolbox (
     -- * Re-exports
     module Control.Monad,
     module Control.Applicative,
+    module Data.Functor,
 ) where
 
 import Control.Applicative
 import Control.Monad
 import Data.Bool (bool)
 import Data.Function (fix)
+import Data.Functor
 import Data.Functor.Identity (Identity (..))
 import Data.Maybe (fromMaybe)
+
+-- | Apply a pure function through two functors instead of one.
+(<<$>>) :: (Functor g, Functor f) => (a -> b) -> g (f a) -> g (f b)
+f <<$>> gfa = fmap (fmap f) gfa
 
 -- | A version of @if...then...else@ over an 'Applicative' functor. Does not short-circuit!
 --
