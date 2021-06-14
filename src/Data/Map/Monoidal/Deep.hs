@@ -38,6 +38,8 @@ module Data.Map.Monoidal.Deep (
     -- * Construction
     empty,
     singleton,
+    (@>),
+    (@|),
 
     -- ** From Unordered Lists
     fromList,
