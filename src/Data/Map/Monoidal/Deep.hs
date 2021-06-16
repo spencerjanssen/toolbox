@@ -286,6 +286,7 @@ module Data.Map.Monoidal.Deep (
     -- * Folds
     foldr,
     foldl,
+    foldNest,
     foldrWithKey,
     foldrWithKey1,
     foldrWithKey2,
@@ -1657,6 +1658,9 @@ mapKeysMWith4 (~~) f0 f1 f2 f3 m = mapKeysMWith (unionWith3 (~~)) f0 =<< travers
 -- | /O(n log n)/. Map a monadic function over the keys of a 'DeepMap' with a value-combining function.
 mapKeysMWith5 :: (Monad m, Ord k0, Ord k1, Ord k2, Ord k3, Ord k4) => (v -> v -> v) -> (j0 -> m k0) -> (j1 -> m k1) -> (j2 -> m k2) -> (j3 -> m k3) -> (j4 -> m k4) -> DeepMap '[j0, j1, j2, j3, j4] v -> m (DeepMap '[k0, k1, k2, k3, k4] v)
 mapKeysMWith5 (~~) f0 f1 f2 f3 f4 m = mapKeysMWith (unionWith4 (~~)) f0 =<< traverseDeep (mapKeysMWith4 (~~) f1 f2 f3 f4) m
+
+foldNest :: (Monoid (DeepMap ks v)) => DeepMap (k ': ks) v -> DeepMap ks v
+foldNest (Nest m) = fold m
 
 -- | /O(n)/. Fold the keys and submaps in the 'DeepMap' using the given right-associative binary operator.
 foldrWithKey :: (k -> DeepMap ks v -> b -> b) -> b -> DeepMap (k ': ks) v -> b
