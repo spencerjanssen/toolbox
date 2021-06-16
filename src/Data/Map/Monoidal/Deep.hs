@@ -490,6 +490,9 @@ instance (Semigroup v) => Semigroup (DeepMap '[] v) where
 instance (Ord k, Semigroup (DeepMap ks v)) => Semigroup (DeepMap (k ': ks) v) where
     (<>) = onNest2 (<>)
 
+instance (Monoid v) => Monoid (DeepMap '[] v) where
+    mempty = Bare mempty
+
 instance (Ord k, Semigroup (DeepMap ks v)) => Monoid (DeepMap (k ': ks) v) where
     mempty = Nest mempty
 
