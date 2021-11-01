@@ -448,6 +448,7 @@ import Data.Foldable.Toolbox (Foldable (fold, foldl', foldr', toList))
 import Data.Function.Toolbox
 import Data.Functor.Compose
 import Data.Functor.Identity
+import Data.Kind (Type)
 import Data.Map.Monoidal.Strict (Map)
 import qualified Data.Map.Monoidal.Strict as Map
 import qualified Data.Map.Strict as OverwritingMap
@@ -466,7 +467,7 @@ import Prelude hiding (
     take,
  )
 
-data DeepMap (ks :: [*]) (v :: *) :: * where
+data DeepMap (ks :: [Type]) (v :: Type) :: Type where
     Bare :: v -> DeepMap '[] v
     Nest :: Map k (DeepMap ks v) -> DeepMap (k ': ks) v
 
@@ -519,7 +520,7 @@ instance (Ord k, Data k, Typeable ks, Typeable v, Data (DeepMap ks v)) => Data (
     toConstr (Nest _) = conNest
     gunfold k z _ = k (z Nest)
 
-type family RepDM (ks :: [*]) v where
+type family RepDM (ks :: [Type]) v where
     RepDM '[] v = Const v
     RepDM (k ': ks) v = Compose [] (Const k :*: RepDM ks v)
 
