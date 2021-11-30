@@ -1,5 +1,8 @@
 # Changelog for toolbox
 
+## v0.3.1.0
+Add `groupAll :: (Ord a) => [a] -> [NonEmpty a]`
+
 ## v0.3.0.0
 Removes monoidal containers (`Data.Map.Monoidal.*~, Data.IntMap.Monoidal.*`) from the package in favour of `monoidal-containers` and `deep-map`.
 

@@ -7,8 +7,8 @@
 -- Utility functions on top of 'Data.List.NonEmpty'.
 --
 -- This module re-exports the above module, so modules need only import 'Data.List.NonEmpty.Toolbox'.
-module Data.List.NonEmpty.Toolbox (
-    -- * Quasi-constructors
+module Data.List.NonEmpty.Toolbox
+  ( -- * Quasi-constructors
     (|:),
     (|>),
     (<||),
@@ -39,15 +39,18 @@ module Data.List.NonEmpty.Toolbox (
     unionOn,
     intersect,
     intersectBy,
+    groupAll,
 
     -- * Re-exports
     module Data.List.NonEmpty,
-) where
+  )
+where
 
 import Control.Monad.Toolbox
 import qualified Data.Foldable.Toolbox as FT
 import Data.Function.Toolbox (using)
 import Data.List.NonEmpty
+import qualified Data.List.NonEmpty as NE
 import qualified Data.List.Toolbox as LT
 import Data.Maybe (fromJust)
 import Prelude hiding (maximum, minimum)
@@ -168,6 +171,9 @@ unionBy f xs ys = fromList $ (LT.unionBy f `using` toList) xs ys
 -- | A version of 'Data.List.Toolbox.unionOn' for 'NonEmpty' lists.
 unionOn :: (Eq b) => (a -> b) -> NonEmpty a -> NonEmpty a -> NonEmpty a
 unionOn f xs ys = unionBy ((==) `using` f) xs ys
+
+groupAll :: (Ord a) => [a] -> [NonEmpty a]
+groupAll = NE.groupAllWith id
 
 -- | A version of 'Data.List.intersect' for 'NonEmpty' lists.
 --
