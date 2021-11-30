@@ -7,7 +7,7 @@ cabal-version: 1.12
 -- hash: 43c17cd378d0b2a2e83c63c1db636b8d72e96bd04322c26797454e95452bd419
 
 name:           toolbox
-version:        0.2.0.0
+version:        0.3.0.0
 description:    Please see the README on GitHub at <https://github.com/bi-functor/toolbox#readme>
 homepage:       https://github.com/bi-functor/toolbox#readme
 bug-reports:    https://github.com/bi-functor/toolbox/issues
