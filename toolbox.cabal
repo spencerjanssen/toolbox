@@ -32,13 +32,8 @@ library
       Data.Foldable.Toolbox
       Data.Function.Toolbox
       Data.Function.Toolbox.Internal
-      Data.IntMap.Monoidal.Lazy
-      Data.IntMap.Monoidal.Strict
       Data.List.NonEmpty.Toolbox
       Data.List.Toolbox
-      Data.Map.Monoidal.Deep
-      Data.Map.Monoidal.Lazy
-      Data.Map.Monoidal.Strict
       Data.Monoid.Toolbox
       Data.Ord.Toolbox
       Data.Time.Calendar.Toolbox
